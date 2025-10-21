@@ -1,0 +1,76 @@
+# === Build and Publish Outputs ===
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.app
+*.log
+
+# === User-specific and IDE files ===
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.csproj.user
+*.vscode/
+*.idea/
+*.vs/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# === EF Core Migrations & SQLite ===
+# Keep Migrations folder, ignore runtime database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# === Secrets, configs, environment ===
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+.env
+.env.*
+
+# === Build system artifacts ===
+project.lock.json
+project.fragment.lock.json
+artifacts/
+TestResults/
+*.coverage
+*.coveragexml
+
+# === ASP.NET / Blazor specific ===
+wwwroot/dist/
+wwwroot/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tgz
+
+# === Rider / JetBrains / VSCode ===
+.idea/
+.vscode/
+*.code-workspace
+
+# === Logs and cache ===
+*.log
+logs/
+.cache/
+.tmp/
+temp/
+
+# === Publish profiles ===
+*.pubxml
+*.publishsettings
+
+# === Generated files ===
+Generated/
