@@ -1,0 +1,84 @@
+@page "/dashboard"
+@using BudgetDashboard.Data
+@using BudgetDashboard.Data.Entities
+@using Microsoft.EntityFrameworkCore
+@inject BudgetContext Db
+@rendermode InteractiveServer
+
+<h3>Budgets Dashboard</h3>
+
+@if (_budgets is null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (_budgets.Count == 0)
+{
+    <div class="alert alert-info">No budgets yet. Create one below.</div>
+}
+
+<div class="row g-3">
+    @if (_budgets is not null)
+    {
+        @foreach (var b in _budgets)
+        {
+            var total = b.Items.Sum(i => i.EstimatedAmount);
+            var optional = b.Items.Where(i => i.IsOptional).Sum(i => i.EstimatedAmount);
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@b.Name</h5>
+                        <p class="card-text">
+                            <strong>Total:</strong> @total.ToString("C")<br />
+                            <strong>Optional:</strong> @optional.ToString("C")<br />
+                            <strong>Items:</strong> @b.Items.Count
+                        </p>
+                        @* <button class="btn btn-primary" @onclick="@(() => Open(b.Id))">
+                            Open
+                        </button> *@
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div>DEBUG: '@_newBudgetName'</div>
+<h4>Create new budget</h4>
+<div class="input-group mb-3">
+    <input name="budgetName" type="text" class="form-control" placeholder="Budget name" @bind="_newBudgetName" @bind:event="oninput" />
+    <button class="btn btn-success" @onclick="CreateBudget" disabled="@string.IsNullOrWhiteSpace(_newBudgetName?.Trim())">Add</button>
+</div>
+
+@code {
+    private List<Budget>? _budgets;
+    private string _newBudgetName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Consider moving fetching budgets to a service or state management solution
+        // _budgets = await BudgetService.GetBudgetsAsync();
+
+        _budgets = await Db.Budgets
+            .Include(b => b.Items)
+            .OrderByDescending(b => b.Id)
+            .ToListAsync();
+    }
+
+    private async Task CreateBudget()
+    {
+        var name = _newBudgetName.Trim();
+        if (string.IsNullOrWhiteSpace(name)) return;
+
+        var budget = new Budget { Name = name };
+        Db.Budgets.Add(budget);
+        await Db.SaveChangesAsync();
+
+        // If the list of budgets is null, initialize it.
+        _budgets ??= new List<Budget>();
+        // Add the newly created budget to the list.
+        _budgets.Add(budget);
+        // Clear the input field.
+        _newBudgetName = string.Empty;
+    }
+}

@@ -9,5 +9,6 @@ public sealed class BudgetItem
 
     public string Name { get; set; } = string.Empty;
     public decimal EstimatedAmount { get; set; }
+    public bool IsOptional { get; set; }
     public DateOnly CreatedOn { get; set; }
 }
