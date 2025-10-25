@@ -1,4 +1,13 @@
-.page {
+nav.nav-menu {
+    background: #f5f7f9;
+    width: 250px;
+
+    hr {
+        color: var(--bs-border-color);
+    }
+}
+
+/* .page {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -95,4 +104,4 @@ main {
         position: absolute;
         right: 0.75rem;
         top: 0.5rem;
-    }
+    } */

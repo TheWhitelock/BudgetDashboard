@@ -3,9 +3,10 @@
 @using BudgetDashboard.Data.Entities
 @using Microsoft.EntityFrameworkCore
 @inject BudgetContext Db
-@rendermode InteractiveServer
 
-<h3>Budgets Dashboard</h3>
+<PageTitle>Dashboard</PageTitle>
+
+<h3>Dashboard</h3>
 
 @if (_budgets is null)
 {
