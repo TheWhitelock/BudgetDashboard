@@ -1,21 +1,71 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <ItemGroup>
     <ProjectReference Include="..\BudgetDashboard.Data\BudgetDashboard.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="DartSassBuilder" Version="1.1.0" />
+    <PackageReference Include="bootstrap.sass" Version="5.3.8" PrivateAssets="all" />
+    <PackageReference Include="Font.Awesome" Version="5.15.4" />
+    
+    <Watch Include="**/*.razor.scss" />
+    <Watch Include="**/*.scss" />
+
+    <DartSass Include="**\*.razor.scss">
+      <OutputPath>%(RootDir)%(Directory)%(Filename).razor.css</OutputPath>
+      <LoadPaths>wwwroot\scss</LoadPaths>
+    </DartSass>
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <HotReloadEnabled>true</HotReloadEnabled>
+    <HotReloadProfile>aspnetcore</HotReloadProfile>
+
+    <!-- Sass output style: pretty in Debug, compressed in Release -->
+    <DartSassOutputStyle Condition="'$(Configuration)' == 'Debug'">expanded</DartSassOutputStyle>
+    <DartSassOutputStyle Condition="'$(Configuration)' == 'Release'">compressed</DartSassOutputStyle>
+
+    <!-- Centralized version number for bootstrap.sass -->
+    <BootstrapSassVersion>5.3.8</BootstrapSassVersion>
+
+    <!-- Include path for Sass compiler to find Bootstrap SCSS files -->
+    <SassIncludePaths>wwwroot\scss\vendor\bootstrap\scss</SassIncludePaths>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Provides design-time tools for EF Core (migrations, scaffolding, etc.) which are not needed at runtime -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
+  <!-- Copy Bootstrap SCSS files from NuGet cache into your project before build -->
+  <Target Name="CopyBootstrapSass" BeforeTargets="Build">
+    <PropertyGroup>
+      <BootstrapSassRoot>$(NuGetPackageRoot)bootstrap.sass\$(BootstrapSassVersion)\contentFiles\content\bootstrap\scss</BootstrapSassRoot>
+    </PropertyGroup>
 
+    <ItemGroup>
+      <_BootstrapScss Include="$(BootstrapSassRoot)\**\*.scss" />
+    </ItemGroup>
+
+    <Copy
+      SourceFiles="@(_BootstrapScss)"
+      DestinationFiles="@(_BootstrapScss->'wwwroot\scss\vendor\bootstrap\scss\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Post-build: move compiled CSS file to wwwroot/css -->
+  <Target Name="MoveCompiledCss" AfterTargets="Build">
+    <MakeDir Directories="wwwroot/" />
+    <Move
+      SourceFiles="wwwroot/scss/app.css"
+      DestinationFiles="wwwroot/app.css"
+      Condition="Exists('wwwroot/scss/app.css')" />
+  </Target>
+
+  <Target Name="RebuildOnScssChange" Inputs="@(Watch)" Outputs="%(Identity).dummy">
+    <Message Text="SCSS change detected, forcing full rebuild..." Importance="high" />
+    <Exec Command="dotnet build" />
+  </Target>
 </Project>

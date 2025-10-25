@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "DdM6dD3NzZ0=",
+  "dgSpecHash": "Dzq8U7AFHPA=",
   "success": true,
   "projectFilePath": "G:\\BudgetDashboard\\BudgetDashboard.Web\\BudgetDashboard.Web.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Whitelock\\.nuget\\packages\\bootstrap.sass\\5.3.8\\bootstrap.sass.5.3.8.nupkg.sha512",
+    "C:\\Users\\Whitelock\\.nuget\\packages\\dartsassbuilder\\1.1.0\\dartsassbuilder.1.1.0.nupkg.sha512",
+    "C:\\Users\\Whitelock\\.nuget\\packages\\font.awesome\\5.15.4\\font.awesome.5.15.4.nupkg.sha512",
     "C:\\Users\\Whitelock\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Whitelock\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\Whitelock\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",

@@ -1,0 +1,20 @@
+@use "../../wwwroot/scss/_globals" as *;
+//@import "../../wwwroot/scss/vendor/bootstrap/scss/bootstrap";
+
+nav.nav-menu {
+    background: #f5f7f9;
+    min-width: 350px;
+
+    > a.logo {
+        color: $primary;
+        text-decoration: none;
+
+        &:hover {
+            color: darken($primary, 10%);
+        }
+    }
+
+    hr {
+        color: $secondary;
+    }
+}

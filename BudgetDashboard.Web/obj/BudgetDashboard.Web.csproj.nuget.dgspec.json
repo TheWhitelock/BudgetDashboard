@@ -123,11 +123,24 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "DartSassBuilder": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            },
+            "Font.Awesome": {
+              "target": "Package",
+              "version": "[5.15.4, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "bootstrap.sass": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.3.8, )"
             }
           },
           "imports": [
