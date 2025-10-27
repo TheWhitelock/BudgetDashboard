@@ -1,10 +1,6 @@
-// @use "variables" as *;
-// @use "vendor/bootstrap/scss/bootstrap" with (
-//   $font-family-sans-serif: ("Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif)
-//);
-
-@import "variables";
+@import "custom";
 @import "vendor/bootstrap/scss/bootstrap";
 
 @import "../../Components/Layout/MainLayout.razor.scss";
 @import "../../Components/Pages/Budgets.razor.scss";
+@import "../../Components/Shared/BudgetCard.razor.scss";

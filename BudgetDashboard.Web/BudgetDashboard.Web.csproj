@@ -34,7 +34,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SassFile Include="wwwroot/scss/app.scss" />
+    <!-- <SassFile Include="wwwroot/scss/app.scss" /> -->
+    <SassFile Include="wwwroot/scss/**/*.scss" Exclude="Components/**/*.scss" />
   </ItemGroup>
 
   <!-- Copy Bootstrap SCSS files from NuGet cache into your project before build -->
