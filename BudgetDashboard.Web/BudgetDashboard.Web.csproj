@@ -55,4 +55,6 @@
       DestinationFiles="wwwroot/app.css"
       Condition="Exists('wwwroot/scss/app.css')" />
   </Target>
+
+  <Target Name="Sass" DependsOnTargets="DartSass_Build" />
 </Project>
