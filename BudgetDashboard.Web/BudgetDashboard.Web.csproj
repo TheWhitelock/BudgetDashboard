@@ -10,7 +10,6 @@
     </PackageReference>
     <PackageReference Include="DartSassBuilder" Version="1.1.0" />
     <PackageReference Include="bootstrap.sass" Version="5.3.8" PrivateAssets="all" />
-    <PackageReference Include="Font.Awesome" Version="5.15.4" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -29,7 +28,14 @@
 
     <!-- Include path for Sass compiler to find Bootstrap SCSS files -->
     <SassIncludePaths>wwwroot\scss\vendor\bootstrap\scss</SassIncludePaths>
+    
+    <!-- TODO -->
+    <EnableDefaultSassItems>false</EnableDefaultSassItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <SassFile Include="wwwroot/scss/app.scss" />
+  </ItemGroup>
 
   <!-- Copy Bootstrap SCSS files from NuGet cache into your project before build -->
   <Target Name="CopyBootstrapSass" BeforeTargets="Build">

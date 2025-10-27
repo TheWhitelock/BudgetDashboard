@@ -2,49 +2,52 @@
 @using BudgetDashboard.Data
 @using BudgetDashboard.Data.Entities
 @using Microsoft.EntityFrameworkCore
+@using BudgetDashboard.Web.Components.Shared
 @inject BudgetContext Db
 
 <PageTitle>Dashboard</PageTitle>
-
-<h3>Dashboard</h3>
 
 @if (_budgets is null)
 {
     <p><em>Loading...</em></p>
 }
+
 else if (_budgets.Count == 0)
 {
     <div class="alert alert-info">No budgets yet. Create one below.</div>
 }
+<div class="row">
+    <div class="col-12 mb-3">
+        <div class="card total-budget-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2 card-title">
+                    <span>Total budgeted</span>
+                </div>
 
-<div class="row g-3">
+                <h2 class="card-text text-dark mb-1">
+                    € @TotalAmount.ToString("N2")
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     @if (_budgets is not null)
     {
-        @foreach (var b in _budgets)
+        @foreach (var budget in _budgets)
         {
-            var total = b.Items.Sum(i => i.EstimatedAmount);
-            var optional = b.Items.Where(i => i.IsOptional).Sum(i => i.EstimatedAmount);
-
-            <div class="col-12 col-md-6 col-xl-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">@b.Name</h5>
-                        <p class="card-text">
-                            <strong>Total:</strong> @total.ToString("C")<br />
-                            <strong>Optional:</strong> @optional.ToString("C")<br />
-                            <strong>Items:</strong> @b.Items.Count
-                        </p>
-                        @* <button class="btn btn-primary" @onclick="@(() => Open(b.Id))">
-                            Open
-                        </button> *@
-                    </div>
-                </div>
+            // Responsive column layout:
+            // - col-md-12 → Full width on medium screens (<992px)
+            // - col-lg-6  → Half width on large screens (≥992px)
+            // - col-xl-4  → One-third width on extra-large screens (≥1200px)
+            <div class="col-md-12 col-lg-6 col-xl-4 mb-3">
+                <BudgetCard Budget="budget" />
             </div>
         }
     }
 </div>
 
-<div>DEBUG: '@_newBudgetName'</div>
 <h4>Create new budget</h4>
 <div class="input-group mb-3">
     <input name="budgetName" type="text" class="form-control" placeholder="Budget name" @bind="_newBudgetName" @bind:event="oninput" />
@@ -65,6 +68,8 @@ else if (_budgets.Count == 0)
             .OrderByDescending(b => b.Id)
             .ToListAsync();
     }
+
+    private decimal TotalAmount => _budgets?.Sum(b => b.Items.Sum(i => i.EstimatedAmount)) ?? 0;
 
     private async Task CreateBudget()
     {

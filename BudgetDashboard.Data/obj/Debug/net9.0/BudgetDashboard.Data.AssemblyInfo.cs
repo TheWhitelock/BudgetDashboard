@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BudgetDashboard.Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65ebc4e3e582eee72e81fece6ffaa17ec3150e31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56c63b98d26188839722d44e76e0481cd20cce90")]
 [assembly: System.Reflection.AssemblyProductAttribute("BudgetDashboard.Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BudgetDashboard.Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

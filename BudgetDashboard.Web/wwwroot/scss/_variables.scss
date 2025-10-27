@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('/fonts/proxima-nova/ProximaNova-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('/fonts/proxima-nova/ProximaNova-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+$primary: #FF6200;
+$secondary: #172B53;
+$body-bg: #ffffff;
+
+$font-family-sans-serif: ("Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif);

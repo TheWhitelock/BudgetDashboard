@@ -1,0 +1,27 @@
+@using BudgetDashboard.Data.Entities
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-2 card-title">
+            <i class="fas fa-piggy-bank"/>
+            <span>@Budget.Name</span>
+        </div>
+
+        <h2 class="card-text text-dark mb-1">
+            € @TotalAmount.ToString("N2")
+        </h2>
+        <small class="text-muted">
+            of which € @OptionalAmount.ToString("N2") is optional
+        </small>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Budget Budget { get; set; } = default!;
+
+    private decimal TotalAmount => Budget.Items.Sum(i => i.EstimatedAmount);
+    private decimal OptionalAmount => Budget.Items
+        .Where(i => i.IsOptional)
+        .Sum(i => i.EstimatedAmount);
+}

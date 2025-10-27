@@ -32,32 +32,16 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Budgets.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCdWRnZXRzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Counter.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmRleC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Test.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUZXN0LnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [G:/BudgetDashboard/BudgetDashboard.Web/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/BudgetDashboard/BudgetDashboard.Web/Components/Shared/BudgetCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQnVkZ2V0Q2FyZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [G:/BudgetDashboard/BudgetDashboard.Web/Components/_Imports.razor]
@@ -68,6 +52,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-opptgn97nj
 
-[G:/BudgetDashboard/BudgetDashboard.Web/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-mrw42cn0t7
+[G:/BudgetDashboard/BudgetDashboard.Web/Components/Pages/Budgets.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCdWRnZXRzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-j6yxnhjp5j
