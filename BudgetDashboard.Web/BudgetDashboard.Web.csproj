@@ -11,14 +11,6 @@
     <PackageReference Include="DartSassBuilder" Version="1.1.0" />
     <PackageReference Include="bootstrap.sass" Version="5.3.8" PrivateAssets="all" />
     <PackageReference Include="Font.Awesome" Version="5.15.4" />
-    
-    <Watch Include="**/*.razor.scss" />
-    <Watch Include="**/*.scss" />
-
-    <DartSass Include="**\*.razor.scss">
-      <OutputPath>%(RootDir)%(Directory)%(Filename).razor.css</OutputPath>
-      <LoadPaths>wwwroot\scss</LoadPaths>
-    </DartSass>
   </ItemGroup>
 
   <PropertyGroup>
@@ -62,10 +54,5 @@
       SourceFiles="wwwroot/scss/app.css"
       DestinationFiles="wwwroot/app.css"
       Condition="Exists('wwwroot/scss/app.css')" />
-  </Target>
-
-  <Target Name="RebuildOnScssChange" Inputs="@(Watch)" Outputs="%(Identity).dummy">
-    <Message Text="SCSS change detected, forcing full rebuild..." Importance="high" />
-    <Exec Command="dotnet build" />
   </Target>
 </Project>
