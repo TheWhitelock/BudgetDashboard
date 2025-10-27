@@ -58,7 +58,6 @@ yarn-error.log*
 
 # === Rider / JetBrains / VSCode ===
 .idea/
-.vscode/
 *.code-workspace
 
 # === Logs and cache ===
