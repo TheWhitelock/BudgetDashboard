@@ -56,5 +56,10 @@
       Condition="Exists('wwwroot/scss/app.css')" />
   </Target>
 
-  <Target Name="Sass" DependsOnTargets="DartSass_Build" />
+  <!-- Full Dart Sass build chain -->
+  <Target Name="Sass" DependsOnTargets="DartSass_DetermineBuildNeeded;DartSass_BuildArgsFromFileList;DartSass_Build;DartSass_SaveNewHash;MoveCompiledCss" />
+
+  <Target Name="BuildSassOnCompile" BeforeTargets="CoreCompile">
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="Sass" />
+  </Target>
 </Project>
