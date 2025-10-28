@@ -1,6 +1,10 @@
+@using BudgetDashboard.Data
 @using BudgetDashboard.Data.Entities
+@using BudgetDashboard.Web.Components.Components
 
-<div class="card">
+@inject BudgetContext Db
+
+<div class="card budget-card" @onclick="() => BudgetCanvas.Show()" style="cursor: pointer;">
     <div class="card-body">
         <div class="d-flex align-items-center gap-2 card-title">
             <i class="fas fa-piggy-bank"/>
@@ -16,12 +20,112 @@
     </div>
 </div>
 
-@code {
-    [Parameter]
-    public Budget Budget { get; set; } = default!;
+<Offcanvas @ref="BudgetCanvas" Position="bottom" Size="450px">
+    <HeaderContent>
+        <div class="editable-field-container">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-piggy-bank"/>
+                @if (IsEditingName)
+                {
+                    <input @bind="EditableName"
+                        @bind:event="oninput"
+                        @onblur="OnNameBlur"
+                        @onkeydown="HandleKeyPress"
+                        maxlength="50"
+                        class="editable-input form-control"
+                        @ref="NameInputRef" />
+                }
+                else
+                {
+                    <h5 class="border rounded border-white m-0 p-1 fw-bolder d-flex align-items-center editable-title" @onclick="StartEditing">@Budget.Name</h5>
+                }
+            </div>
+        </div>
+    </HeaderContent>
 
+    <BodyContent>
+        <p>This is your offcanvas content!</p>
+    </BodyContent>
+</Offcanvas>
+
+@code {
+    [Parameter] public Budget Budget { get; set; } = default!;
     private decimal TotalAmount => Budget.Items.Sum(i => i.EstimatedAmount);
     private decimal OptionalAmount => Budget.Items
         .Where(i => i.IsOptional)
         .Sum(i => i.EstimatedAmount);
+
+    private Offcanvas BudgetCanvas = default!;
+    private bool IsEditingName { get; set; }
+    private string EditableName { get; set; } = "";
+    private bool ShouldSaveName { get; set; }
+
+    private ElementReference NameInputRef;
+    private bool ShouldFocusInput;
+
+    private void StartEditing()
+    {
+        EditableName = Budget.Name;
+        IsEditingName = true;
+        ShouldFocusInput = true;
+        ShouldSaveName = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ShouldFocusInput)
+        {
+            ShouldFocusInput = false;
+            await NameInputRef.FocusAsync(); // manually focus
+        }
+    }
+
+    private async Task OnNameBlur(FocusEventArgs e)
+    {
+        if (ShouldSaveName)
+        {
+            // wait one tick before hiding the input (so blur event completes)
+            await Task.Delay(1);
+            await SaveName();
+        }
+    }
+
+    private async Task SaveName()
+    {
+        if (string.IsNullOrWhiteSpace(EditableName))
+        {
+            IsEditingName = false;
+            StateHasChanged();
+            return;
+        }
+
+        if (EditableName != Budget.Name)
+        {
+            try
+            {
+                Budget.Name = EditableName;
+                Db.Budgets.Update(Budget);
+                await Db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error updating budget name: {ex.Message}");
+            }
+        }
+
+        IsEditingName = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await SaveName();
+        else if (e.Key == "Escape")
+        {
+            IsEditingName = false;
+            ShouldSaveName = false;
+            StateHasChanged();
+        }
+    }
 }

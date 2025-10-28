@@ -2,8 +2,8 @@
 @using BudgetDashboard.Data
 @using BudgetDashboard.Data.Entities
 @using BudgetDashboard.Web.Components.Components
-@using Microsoft.EntityFrameworkCore
 @using BudgetDashboard.Web.Components.Shared
+@using Microsoft.EntityFrameworkCore
 @inject BudgetContext Db
 
 <PageTitle>Dashboard</PageTitle>
@@ -51,8 +51,10 @@ else if (_budgets.Count == 0)
 
 <button class="btn btn-primary" @onclick="() => BudgetCanvas.Show()">Open Menu</button>
 
-<Offcanvas @ref="BudgetCanvas" Title="Menu" Position="bottom" Size="350px">
-    <p>This is your offcanvas content!</p>
+<Offcanvas @ref="BudgetCanvas" Position="bottom" Size="350px">
+    <BodyContent>
+        <p>This is your offcanvas content!</p>
+    </BodyContent>
 </Offcanvas>
 
 <h4>Create new budget</h4>

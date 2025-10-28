@@ -2910,7 +2910,7 @@ textarea.form-control-lg {
   --bs-btn-font-size: 1rem;
   --bs-btn-font-weight: 400;
   --bs-btn-line-height: 1.5;
-  --bs-btn-color: #ffffff;
+  --bs-btn-color: var(--bs-body-color);
   --bs-btn-bg: transparent;
   --bs-btn-border-width: var(--bs-border-width);
   --bs-btn-border-color: transparent;
@@ -7274,7 +7274,7 @@ textarea.form-control-lg {
   box-shadow: var(--bs-box-shadow) !important;
 }
 
-.shadow-sm {
+.shadow-sm, div.budget-card:hover {
   box-shadow: var(--bs-box-shadow-sm) !important;
 }
 
@@ -7512,7 +7512,7 @@ textarea.form-control-lg {
   border-color: var(--bs-danger-border-subtle) !important;
 }
 
-.border-light-subtle {
+.border-light-subtle, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover {
   border-color: var(--bs-light-border-subtle) !important;
 }
 
@@ -11893,6 +11893,28 @@ div.total-budget-card {
   color: #fff;
 }
 
-div.card > div.card-body > div.card-title > i.fa-piggy-bank {
+i.fa-piggy-bank {
   color: #FF6200;
+}
+
+div.budget-card {
+  transition: all 0.15s ease-in-out;
+}
+div.budget-card:hover {
+  filter: brightness(97%);
+}
+div.budget-card:active {
+  filter: brightness(92%);
+}
+
+div.editable-field-container h5.editable-title, div.editable-field-container .editable-title.h5 {
+  cursor: pointer;
+  height: 38px;
+  transition: all 0.2s ease-in-out;
+}
+div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover {
+  color: #FF6200;
+}
+div.editable-field-container input.editable-input {
+  min-width: 300px;
 }

@@ -30,6 +30,18 @@
       }
     },
     {
+      "label": "Clean",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["clean"],
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
       "label": "Run application",
       "type": "process",
       "command": "dotnet",

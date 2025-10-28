@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Components
 
-<div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
+@* <div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
     <div class="offcanvas-header">
         <h5 class="offcanvas-title">@Title</h5>
         <button type="button" class="btn-close text-reset" @onclick="Hide"></button>
@@ -8,6 +8,27 @@
     <div class="offcanvas-body">
         @ChildContent
     </div>
+</div> *@
+
+<div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
+    @if (HeaderContent is not null)
+    {
+        <div class="offcanvas-header">
+            @HeaderContent
+            <button type="button" class="btn-close text-reset" @onclick="Hide"></button>
+        </div>
+    }
+
+    <div class="offcanvas-body">
+        @BodyContent
+    </div>
+
+    @if (FooterContent is not null)
+    {
+        <div class="offcanvas-footer border-top p-3">
+            @FooterContent
+        </div>
+    }
 </div>
 
 @if (BackdropVisible)
@@ -17,14 +38,36 @@
 
 @code {
     // Offcanvas content
-    [Parameter] public string? Title { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>
+    /// The content displayed in the header section of the offcanvas.
+    /// </summary>
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
 
-    // Offcanvas position and size
-    [Parameter] public string Position { get; set; } = "start";
+    /// <summary>
+    /// The main content inside the offcanvas body.
+    /// </summary>
+    [Parameter] public RenderFragment? BodyContent { get; set; }
+
+    /// <summary>
+    /// Optional footer content displayed at the bottom.
+    /// </summary>
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Determines which side the offcanvas appears from: start, end, top, bottom.
+    /// </summary>
+    [Parameter] public string Position { get; set; } = "Bottom";
+
+    /// <summary>
+    /// The size or height (for bottom/top) of the offcanvas.
+    /// </summary>
     [Parameter] public string Size { get; set; } = "md";
 
+    /// <summary>
+    /// Tracks visibility of the offcanvas.
+    /// </summary>
     [Parameter] public bool IsVisible { get; set; }
+
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
 
     // Compute CSS classes based on position and size
@@ -33,7 +76,7 @@
     private string BackdropCss => $"offcanvas-backdrop fade {(BackdropShow ? "show" : "")}";
     //private string OffcanvasStyle => IsVisible ? "visibility: visible;" : "visibility: hidden;";
 
-    // ===== Internal state =====
+    // ===== Internal animation state =====
     private bool IsAnimating { get; set; }
     private bool BackdropVisible { get; set; }
     private bool BackdropShow { get; set; }
