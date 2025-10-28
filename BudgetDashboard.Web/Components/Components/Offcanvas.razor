@@ -1,0 +1,83 @@
+@using Microsoft.AspNetCore.Components
+
+<div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">@Title</h5>
+        <button type="button" class="btn-close text-reset" @onclick="Hide"></button>
+    </div>
+    <div class="offcanvas-body">
+        @ChildContent
+    </div>
+</div>
+
+@if (BackdropVisible)
+{
+    <div class="@BackdropCss" @onclick="Hide"></div>
+}
+
+@code {
+    // Offcanvas content
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    // Offcanvas position and size
+    [Parameter] public string Position { get; set; } = "start";
+    [Parameter] public string Size { get; set; } = "md";
+
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    // Compute CSS classes based on position and size
+    private string OffcanvasCss => $"offcanvas offcanvas-{Position} offcanvas-{Size} {(AnimationState == "show" ? "show" : (AnimationState == "hide" ? "hiding" : ""))}";
+
+    private string BackdropCss => $"offcanvas-backdrop fade {(BackdropShow ? "show" : "")}";
+    //private string OffcanvasStyle => IsVisible ? "visibility: visible;" : "visibility: hidden;";
+
+    // ===== Internal state =====
+    private bool IsAnimating { get; set; }
+    private bool BackdropVisible { get; set; }
+    private bool BackdropShow { get; set; }
+    private string AnimationState { get; set; } = ""; // "show" or "hide"
+
+    public async Task Show()
+    {
+        if (IsAnimating) return;
+        IsAnimating = true;
+
+        // Step 1: Make backdrop visible in DOM
+        BackdropVisible = true;
+        BackdropShow = false;
+        AnimationState = "show";
+        IsVisible = true;
+        await IsVisibleChanged.InvokeAsync(true);
+        StateHasChanged();
+
+        // Step 2: Wait until it's rendered before adding "show"
+        await Task.Delay(10); // slightly more reliable than Task.Yield()
+        BackdropShow = true;
+        StateHasChanged();
+
+        // Step 3: Wait for transition
+        await Task.Delay(300);
+        IsAnimating = false;
+    }
+
+    public async Task Hide()
+    {
+        if (IsAnimating) return;
+        IsAnimating = true;
+
+        AnimationState = "hide";
+        BackdropShow = false;
+        await IsVisibleChanged.InvokeAsync(false);
+        StateHasChanged();
+
+        await Task.Delay(300); // allow transition to finish
+
+        IsVisible = false;
+        BackdropVisible = false;
+        AnimationState = "";
+        IsAnimating = false;
+        StateHasChanged();
+    }
+}
