@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<Offcanvas @ref="BudgetCanvas" Position="bottom" Size="450px">
+<Offcanvas @ref="BudgetCanvas" Position="end" Size="500px">
     <HeaderContent>
         <div class="editable-field-container">
             <div class="d-flex align-items-center gap-2">
@@ -44,7 +44,78 @@
     </HeaderContent>
 
     <BodyContent>
-        <p>This is your offcanvas content!</p>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50%">Name</th>
+                        <th style="width: 25%">Amount (€)</th>
+                        <th style="width: 15%">Optional</th>
+                        <th style="width: 10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Budget.Items)
+                    {
+                        <tr>
+                            <td>
+                                @if (EditingItem == item && EditingField == "Name")
+                                {
+                                    <input @bind="EditableItemName"
+                                        @bind:event="oninput"
+                                        @onblur="() => SaveItem(item)"
+                                        @onkeydown="(e) => HandleItemKeyPress(e, item)"
+                                        class="form-control form-control-sm"
+                                        autofocus />
+                                }
+                                else
+                                {
+                                    <span @onclick='() => StartEditingItem(item, "Name")'
+                                        style="cursor: pointer;">@item.Name</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (EditingItem == item && EditingField == "Amount")
+                                {
+                                    <input type="number"
+                                        step="0.01"
+                                        @bind="EditableItemAmount"
+                                        @bind:event="oninput"
+                                        @onblur="() => SaveItem(item)"
+                                        @onkeydown="(e) => HandleItemKeyPress(e, item)"
+                                        class="form-control form-control-sm"
+                                        autofocus />
+                                }
+                                else
+                                {
+                                    <span @onclick='() => StartEditingItem(item, "Amount")'
+                                        style="cursor: pointer;">@item.EstimatedAmount.ToString("N2")</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                <input type="checkbox"
+                                    checked="@item.IsOptional"
+                                    @onchange="(e) => ToggleOptional(item, e.Value is true)" />
+                            </td>
+
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-danger"
+                                        title="Delete item"
+                                        @onclick="() => DeleteItem(item)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-sm btn-primary" @onclick="AddItem">
+            <i class="fas fa-plus"></i> Add Item
+        </button>
     </BodyContent>
 </Offcanvas>
 
@@ -127,5 +198,109 @@
             ShouldSaveName = false;
             StateHasChanged();
         }
+    }
+
+    // ===== Item Editing =====
+
+    private BudgetItem? EditingItem;
+    private string EditingField = "";
+    private string EditableItemName = "";
+    private decimal EditableItemAmount;
+    private bool ShouldSaveItem = true;
+
+    private void StartEditingItem(BudgetItem item, string field)
+    {
+        EditingItem = item;
+        EditingField = field;
+        ShouldSaveItem = true;
+
+        if (field == "Name")
+            EditableItemName = item.Name;
+        else if (field == "Amount")
+            EditableItemAmount = item.EstimatedAmount;
+    }
+
+    private async Task SaveItem(BudgetItem item)
+    {
+        if (!ShouldSaveItem)
+        {
+            ShouldSaveItem = true;
+            EditingItem = null;
+            EditingField = "";
+            return;
+        }
+
+        if (EditingField == "Name" && EditableItemName != item.Name)
+            item.Name = EditableItemName;
+        else if (EditingField == "Amount" && EditableItemAmount != item.EstimatedAmount)
+            item.EstimatedAmount = EditableItemAmount;
+
+        try
+        {
+            Db.BudgetItems.Update(item);
+            await Db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error saving budget item: {ex.Message}");
+        }
+
+        EditingItem = null;
+        EditingField = "";
+        StateHasChanged();
+    }
+
+    private void HandleItemKeyPress(KeyboardEventArgs e, BudgetItem item)
+    {
+        if (e.Key == "Enter")
+            _ = SaveItem(item);
+        else if (e.Key == "Escape")
+        {
+            ShouldSaveItem = false;
+            EditingItem = null;
+            EditingField = "";
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleOptional(BudgetItem item, bool isOptional)
+    {
+        item.IsOptional = isOptional;
+        try
+        {
+            Db.BudgetItems.Update(item);
+            await Db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error toggling IsOptional: {ex.Message}");
+        }
+    }
+
+    private async Task AddItem()
+    {
+        var newItem = new BudgetItem
+        {
+            BudgetId = Budget.Id,
+            Name = "New Item",
+            EstimatedAmount = 0,
+            IsOptional = false,
+            CreatedOn = DateOnly.FromDateTime(DateTime.Now)
+        };
+
+        Budget.Items.Add(newItem);
+        Db.BudgetItems.Add(newItem);
+        await Db.SaveChangesAsync();
+
+        StateHasChanged();
+    }
+
+    private async Task DeleteItem(BudgetItem item)
+    {
+        Budget.Items.Remove(item);
+        Db.BudgetItems.Remove(item);
+        await Db.SaveChangesAsync();
+
+        StateHasChanged();
     }
 }

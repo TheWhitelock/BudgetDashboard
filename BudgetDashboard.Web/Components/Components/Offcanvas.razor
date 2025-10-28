@@ -1,16 +1,6 @@
 @using Microsoft.AspNetCore.Components
 
-@* <div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title">@Title</h5>
-        <button type="button" class="btn-close text-reset" @onclick="Hide"></button>
-    </div>
-    <div class="offcanvas-body">
-        @ChildContent
-    </div>
-</div> *@
-
-<div class="@OffcanvasCss" tabindex="-1" @onclick:stopPropagation>
+<div class="@OffcanvasCss" tabindex="-1" style="@Style" @onclick:stopPropagation>
     @if (HeaderContent is not null)
     {
         <div class="offcanvas-header">
@@ -19,7 +9,7 @@
         </div>
     }
 
-    <div class="offcanvas-body">
+    <div class="offcanvas-body pt-0">
         @BodyContent
     </div>
 
@@ -61,7 +51,7 @@
     /// <summary>
     /// The size or height (for bottom/top) of the offcanvas.
     /// </summary>
-    [Parameter] public string Size { get; set; } = "md";
+    [Parameter] public string Size { get; set; } = "400px";
 
     /// <summary>
     /// Tracks visibility of the offcanvas.
@@ -74,7 +64,12 @@
     private string OffcanvasCss => $"offcanvas offcanvas-{Position} offcanvas-{Size} {(AnimationState == "show" ? "show" : (AnimationState == "hide" ? "hiding" : ""))}";
 
     private string BackdropCss => $"offcanvas-backdrop fade {(BackdropShow ? "show" : "")}";
-    //private string OffcanvasStyle => IsVisible ? "visibility: visible;" : "visibility: hidden;";
+    private string Style =>
+        Position switch
+        {
+            "top" or "bottom" => $"height: {Size ?? "auto"};",
+            _ => $"width: {Size ?? "400px"};"
+        };
 
     // ===== Internal animation state =====
     private bool IsAnimating { get; set; }
