@@ -49,6 +49,7 @@ TestResults/
 # === ASP.NET / Blazor specific ===
 wwwroot/dist/
 wwwroot/node_modules/
+wwwroot/css/app.css
 node_modules/
 npm-debug.log*
 yarn-debug.log*

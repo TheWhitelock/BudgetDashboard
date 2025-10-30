@@ -18,5 +18,28 @@ $body-bg: #ffffff;
 $primary: #FF6200;
 $secondary: #3c4d6f;
 
-
 $font-family-sans-serif: ("Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif);
+
+
+// TODO TIMWIT: Explore Web Awesome in the future.
+// :where(:root),
+//   .wa-theme-default,
+//   .wa-light,
+//   .wa-dark,
+//   .wa-invert {
+//     --wa-font-family-body: $font-family-sans-serif;
+
+//     --wa-color-brand-95: filter(#FF6200, 145%);
+//     --wa-color-brand-90: filter(#FF6200, 140%);
+//     --wa-color-brand-80: filter(#FF6200, 130%);
+//     --wa-color-brand-70: filter(#FF6200, 120%);
+//     --wa-color-brand-60: filter(#FF6200, 110%);
+//     --wa-color-brand-50: #FF6200;
+//     --wa-color-brand-40: filter(#FF6200, 90%);
+//     --wa-color-brand-30: filter(#FF6200, 80%);
+//     --wa-color-brand-20: filter(#FF6200, 70%);
+//     --wa-color-brand-10: filter(#FF6200, 60%);
+//     --wa-color-brand-05: filter(#FF6200, 55%);
+//     --wa-color-brand: #FF6200;
+//     --wa-color-brand-on: #ffffff;
+//   }

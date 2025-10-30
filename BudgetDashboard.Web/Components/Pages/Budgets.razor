@@ -21,13 +21,19 @@ else if (_budgets.Count == 0)
     <div class="col-12 mb-3">
         <div class="card total-budget-card">
             <div class="card-body">
-                <div class="d-flex align-items-center gap-2 card-title">
-                    <span>Total budgeted</span>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column align-items-start gap-2">
+                        <span>Total budgeted</span>
+                        <h2 class="card-text mb-1">
+                            € @TotalAmount.ToString("N2")
+                        </h2>
+                    </div>
+                    <button class="btn btn-primary pe-3 gap-2" @onclick="CreateBudget">
+                        <i class="fas fa-plus"></i>
+                        <span>Add</span>
+                    </button>
                 </div>
-
-                <h2 class="card-text mb-1">
-                    € @TotalAmount.ToString("N2")
-                </h2>
+                
             </div>
         </div>
     </div>
@@ -49,26 +55,32 @@ else if (_budgets.Count == 0)
     }
 </div>
 
-<button class="btn btn-primary" @onclick="() => BudgetCanvas.Show()">Open Menu</button>
-
-<Offcanvas @ref="BudgetCanvas" Position="bottom" Size="350px">
-    <BodyContent>
-        <p>This is your offcanvas content!</p>
-    </BodyContent>
-</Offcanvas>
-
-<h4>Create new budget</h4>
-<div class="input-group mb-3">
-    <input name="budgetName" type="text" class="form-control" placeholder="Budget name" @bind="_newBudgetName" @bind:event="oninput" />
-    <button class="btn btn-success" @onclick="CreateBudget" disabled="@string.IsNullOrWhiteSpace(_newBudgetName?.Trim())">Add</button>
-</div>
+@* <h4>Create new budget</h4>
+<div class="d-flex gap-2 mb-3">
+    <wa-input name="budgetName" type="text" placeholder="Budget name" @bind="_newBudgetName" @bind:event="oninput" />
+    <wa-button @onclick="CreateBudget" disabled="@string.IsNullOrWhiteSpace(_newBudgetName?.Trim())">Add</wa-button>
+</div> *@
 
 @code {
     private List<Budget>? _budgets;
-    private string _newBudgetName = string.Empty;
-    private decimal TotalAmount => _budgets?.Sum(b => b.Items.Sum(i => i.EstimatedAmount)) ?? 0;
+    private decimal TotalAmount
+    {
+        get
+        {
+            if (_budgets == null) return 0m;
+            decimal total = 0m;
+            foreach (var b in _budgets)
+            {
+                if (b.Items == null) continue;
+                foreach (var i in b.Items)
+                {
+                    total += i.EstimatedAmount;
+                }
+            }
+            return total;
+        }
+    }
     
-    private Offcanvas BudgetCanvas = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,14 +91,13 @@ else if (_budgets.Count == 0)
             .Include(b => b.Items)
             .OrderByDescending(b => b.Id)
             .ToListAsync();
+        
+        await customElements.whenDefined('wa-button');
     }
 
     private async Task CreateBudget()
     {
-        var name = _newBudgetName.Trim();
-        if (string.IsNullOrWhiteSpace(name)) return;
-
-        var budget = new Budget { Name = name };
+        var budget = new Budget { Name = "TODO" };
         Db.Budgets.Add(budget);
         await Db.SaveChangesAsync();
 
@@ -94,7 +105,5 @@ else if (_budgets.Count == 0)
         _budgets ??= new List<Budget>();
         // Add the newly created budget to the list.
         _budgets.Add(budget);
-        // Clear the input field.
-        _newBudgetName = string.Empty;
     }
 }
