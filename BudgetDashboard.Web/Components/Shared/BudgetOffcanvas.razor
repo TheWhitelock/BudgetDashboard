@@ -1,0 +1,298 @@
+@using BudgetDashboard.Data
+@using BudgetDashboard.Data.Entities
+@using BudgetDashboard.Web.Components.Components
+@using Microsoft.EntityFrameworkCore
+@inject BudgetContext Db
+
+<Offcanvas @ref="BudgetCanvas" Position="start" Size="500px" OnHidden="HandleOffcanvasClosed">
+    <HeaderContent>
+        <div class="editable-field-container">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-piggy-bank"/>
+                @if (IsEditingName)
+                {
+                    <form class="@FormValidationClass" novalidate>
+                        <input @bind="EditableName"
+                            @bind:event="oninput"
+                            @onblur="OnNameBlur"
+                            @onkeydown="HandleKeyPress"
+                            maxlength="50"
+                            required
+                            class="editable-input form-control"
+                            placeholder="Enter budget name..."
+                            @ref="NameInputRef" />
+
+                        @* <div class="invalid-feedback">
+                            Please provide a name.
+                        </div> *@
+                    </form>
+                }
+                else
+                {
+                    <h5 class="border rounded border-white m-0 p-1 fw-bolder d-flex align-items-center editable-title" 
+                        @onclick="StartEditingName">@WorkingBudget.Name</h5>
+                }
+            </div>
+        </div>
+    </HeaderContent>
+
+    <BodyContent>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50%">Name</th>
+                        <th style="width: 25%">Amount (€)</th>
+                        <th style="width: 15%">Optional</th>
+                        <th style="width: 10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in WorkingBudget.Items)
+                    {
+                        <tr>
+                            <td>
+                                @if (EditingItem == item && EditingField == "Name")
+                                {
+                                    <input @bind="EditableItemName"
+                                           @bind:event="oninput"
+                                           @onblur="() => SaveItem(item)"
+                                           @onkeydown="(e) => HandleItemKeyPress(e, item)"
+                                           class="form-control form-control-sm"
+                                           autofocus />
+                                }
+                                else
+                                {
+                                    <span @onclick='() => StartEditingItem(item, "Name")'
+                                          style="cursor: pointer;">@item.Name</span>
+                                }
+                            </td>
+                            <td>
+                                @if (EditingItem == item && EditingField == "Amount")
+                                {
+                                    <input type="number"
+                                           step="0.01"
+                                           @bind="EditableItemAmount"
+                                           @bind:event="oninput"
+                                           @onblur="() => SaveItem(item)"
+                                           @onkeydown="(e) => HandleItemKeyPress(e, item)"
+                                           class="form-control form-control-sm"
+                                           autofocus />
+                                }
+                                else
+                                {
+                                    <span @onclick='() => StartEditingItem(item, "Amount")'
+                                          style="cursor: pointer;">@item.EstimatedAmount.ToString("N2")</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox"
+                                       checked="@item.IsOptional"
+                                       @onchange="(e) => ToggleOptional(item, e.Value is true)" />
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-danger"
+                                        title="Delete item"
+                                        @onclick="() => DeleteItem(item)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-primary d-flex align-items-center me-3 gap-2" @onclick="AddItem">
+            <i class="fas fa-plus"></i>
+            <span>Add</span>
+        </button>
+    </BodyContent>
+</Offcanvas>
+
+@code {
+    [Parameter] public Budget? Budget { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    private Offcanvas BudgetCanvas = default!;
+    private Budget WorkingBudget = new();
+
+    private string FormValidationClass = "";
+
+    // Name editing
+    private bool IsEditingName { get; set; }
+    private string EditableName { get; set; } = "";
+    private ElementReference NameInputRef;
+    private bool ShouldFocusInput;
+
+    // Item editing
+    private BudgetItem? EditingItem { get; set; }
+    private string EditingField { get; set; } = "";
+    private string EditableItemName { get; set; } = "";
+    private decimal EditableItemAmount { get; set; }
+
+    public async Task ShowAsync(Budget? budget = null)
+    {
+        // Initialize for create or edit
+        if (budget is null)
+        {
+            WorkingBudget = new Budget
+            {
+                Name = "",
+                CreatedOn = DateOnly.FromDateTime(DateTime.Now),
+                Items = new List<BudgetItem>()
+            };
+            StartEditingName();
+        }
+        else
+        {
+            WorkingBudget = budget;
+        }
+
+        await BudgetCanvas.Show();
+    }
+
+    private void HandleOffcanvasClosed()
+    {
+        // Reset editing state, validation, etc.
+        WorkingBudget = new Budget { Items = new List<BudgetItem>() };
+        IsEditingName = false;
+        EditingItem = null;
+        EditingField = "";
+        EditableName = "";
+        FormValidationClass = "";
+        ShouldFocusInput = false;
+
+        StateHasChanged();
+    }
+
+    private async Task SaveName()
+    {
+        // Mark form as validated to trigger Bootstrap styles
+        FormValidationClass = "was-validated";
+
+        // If invalid, stop here
+        if (string.IsNullOrWhiteSpace(EditableName))
+        {
+            StateHasChanged();
+            return;
+        }
+
+        // Clear validation after a successful save
+        FormValidationClass = "";
+
+        if (EditableName != WorkingBudget.Name)
+        {
+            WorkingBudget.Name = EditableName;
+            Db.Budgets.Update(WorkingBudget);
+            await Db.SaveChangesAsync();
+            await OnSaved.InvokeAsync();
+        }
+
+        IsEditingName = false;
+        StateHasChanged();
+    }
+
+
+    private void StartEditingName()
+    {
+        EditableName = WorkingBudget.Name;
+        IsEditingName = true;
+        ShouldFocusInput = true;
+    }
+
+    private async Task OnNameBlur(FocusEventArgs e) => await SaveName();
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await SaveName();
+        else if (e.Key == "Escape")
+        {
+            IsEditingName = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ShouldFocusInput)
+        {
+            ShouldFocusInput = false;
+            await NameInputRef.FocusAsync();
+        }
+    }
+
+    private void StartEditingItem(BudgetItem item, string field)
+    {
+        EditingItem = item;
+        EditingField = field;
+
+        if (field == "Name")
+            EditableItemName = item.Name;
+        else if (field == "Amount")
+            EditableItemAmount = item.EstimatedAmount;
+    }
+
+    private async Task SaveItem(BudgetItem item)
+    {
+        if (EditingField == "Name")
+            item.Name = EditableItemName;
+        else if (EditingField == "Amount")
+            item.EstimatedAmount = EditableItemAmount;
+
+        EditingItem = null;
+        EditingField = "";
+
+        Db.BudgetItems.Update(item);
+        await Db.SaveChangesAsync();
+        await OnSaved.InvokeAsync();
+    }
+
+    private async Task HandleItemKeyPress(KeyboardEventArgs e, BudgetItem item)
+    {
+        if (e.Key == "Enter")
+            await SaveItem(item);
+        else if (e.Key == "Escape")
+        {
+            EditingItem = null;
+            EditingField = "";
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleOptional(BudgetItem item, bool newValue)
+    {
+        item.IsOptional = newValue;
+        Db.BudgetItems.Update(item);
+        await Db.SaveChangesAsync();
+        await OnSaved.InvokeAsync();
+    }
+
+    private async Task AddItem()
+    {
+        var newItem = new BudgetItem
+        {
+            Name = "New Item",
+            EstimatedAmount = 0,
+            IsOptional = false,
+            CreatedOn = DateOnly.FromDateTime(DateTime.Now),
+            BudgetId = WorkingBudget.Id
+        };
+
+        Db.BudgetItems.Add(newItem);
+        await Db.SaveChangesAsync();
+
+        WorkingBudget.Items.Add(newItem);
+        await OnSaved.InvokeAsync();
+    }
+
+    private async Task DeleteItem(BudgetItem item)
+    {
+        Db.BudgetItems.Remove(item);
+        await Db.SaveChangesAsync();
+
+        WorkingBudget.Items.Remove(item);
+        await OnSaved.InvokeAsync();
+    }
+}

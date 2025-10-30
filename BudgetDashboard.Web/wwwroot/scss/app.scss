@@ -1,6 +1,14 @@
 @import "custom";
 @import "vendor/bootstrap/scss/bootstrap";
 
+.btn-primary {
+    --bs-btn-color: #{$white};
+    --bs-btn-hover-color: #{$gray-100};
+    --bs-btn-active-color: #{$gray-200};
+    --bs-btn-disabled-color: #{$white};
+}
+
 @import "../../Components/Layout/MainLayout.razor.scss";
 @import "../../Components/Pages/Budgets.razor.scss";
 @import "../../Components/Shared/BudgetCard.razor.scss";
+

@@ -12,11 +12,11 @@
 {
     <p><em>Loading...</em></p>
 }
-
 else if (_budgets.Count == 0)
 {
     <div class="alert alert-info">No budgets yet. Create one below.</div>
 }
+
 <div class="row">
     <div class="col-12 mb-3">
         <div class="card total-budget-card">
@@ -28,12 +28,11 @@ else if (_budgets.Count == 0)
                             € @TotalAmount.ToString("N2")
                         </h2>
                     </div>
-                    <button class="btn btn-primary pe-3 gap-2" @onclick="CreateBudget">
+                    <button class="btn btn-primary d-flex align-items-center me-3 gap-2" @onclick="CreateBudget">
                         <i class="fas fa-plus"></i>
                         <span>Add</span>
                     </button>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -44,25 +43,21 @@ else if (_budgets.Count == 0)
     {
         @foreach (var budget in _budgets)
         {
-            // Responsive column layout:
-            // - col-md-12 → Full width on medium screens (<992px)
-            // - col-lg-6  → Half width on large screens (≥992px)
-            // - col-xl-4  → One-third width on extra-large screens (≥1200px)
             <div class="col-md-12 col-lg-6 col-xl-4 mb-3">
-                <BudgetCard Budget="budget" />
+                <BudgetCard 
+                    Budget="budget"
+                    OnEdit="EditBudget" />
             </div>
         }
     }
 </div>
 
-@* <h4>Create new budget</h4>
-<div class="d-flex gap-2 mb-3">
-    <wa-input name="budgetName" type="text" placeholder="Budget name" @bind="_newBudgetName" @bind:event="oninput" />
-    <wa-button @onclick="CreateBudget" disabled="@string.IsNullOrWhiteSpace(_newBudgetName?.Trim())">Add</wa-button>
-</div> *@
+<BudgetOffcanvas @ref="_budgetOffcanvas" OnSaved="ReloadBudgets" />
 
 @code {
     private List<Budget>? _budgets;
+    private BudgetOffcanvas? _budgetOffcanvas;
+
     private decimal TotalAmount
     {
         get
@@ -73,37 +68,40 @@ else if (_budgets.Count == 0)
             {
                 if (b.Items == null) continue;
                 foreach (var i in b.Items)
-                {
                     total += i.EstimatedAmount;
-                }
             }
             return total;
         }
     }
-    
 
-    protected override async Task OnInitializedAsync()
-    {
-        // Consider moving fetching budgets to a service or state management solution
-        // _budgets = await BudgetService.GetBudgetsAsync();
+    protected override async Task OnInitializedAsync() => await LoadBudgets();
 
-        _budgets = await Db.Budgets
-            .Include(b => b.Items)
-            .OrderByDescending(b => b.Id)
-            .ToListAsync();
-        
-        await customElements.whenDefined('wa-button');
-    }
+private async Task LoadBudgets()
+{
+    var budgets = await Db.Budgets
+        .Include(b => b.Items)
+        .ToListAsync();
+
+    _budgets = budgets
+        .OrderByDescending(b => b.Items?.Sum(i => i.EstimatedAmount) ?? 0m)
+        .ToList();
+}
 
     private async Task CreateBudget()
     {
-        var budget = new Budget { Name = "TODO" };
-        Db.Budgets.Add(budget);
-        await Db.SaveChangesAsync();
+        if (_budgetOffcanvas is not null)
+            await _budgetOffcanvas.ShowAsync(null);
+    }
 
-        // If the list of budgets is null, initialize it.
-        _budgets ??= new List<Budget>();
-        // Add the newly created budget to the list.
-        _budgets.Add(budget);
+    private async Task EditBudget(Budget budget)
+    {
+        if (_budgetOffcanvas is not null)
+            await _budgetOffcanvas.ShowAsync(budget);
+    }
+
+    private async Task ReloadBudgets()
+    {
+        await LoadBudgets();
+        StateHasChanged();
     }
 }

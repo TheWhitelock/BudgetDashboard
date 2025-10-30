@@ -56,6 +56,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQnVkZ2V0Q2FyZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[G:/BudgetDashboard/BudgetDashboard.Web/Components/Shared/BudgetOffcanvas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcQnVkZ2V0T2ZmY2FudmFzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [G:/BudgetDashboard/BudgetDashboard.Web/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

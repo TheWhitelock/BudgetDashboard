@@ -58,7 +58,15 @@
     /// </summary>
     [Parameter] public bool IsVisible { get; set; }
 
-    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    /// <summary>
+    /// Triggered after the offcanvas has finished hiding.
+    /// </summary>
+    [Parameter] public EventCallback OnHidden { get; set; }
+
+    /// <summary>
+    /// Triggered after the offcanvas has finished showing.
+    /// </summary>
+    [Parameter] public EventCallback OnShown { get; set; }
 
     // Compute CSS classes based on position and size
     private string OffcanvasCss => $"offcanvas offcanvas-{Position} offcanvas-{Size} {(AnimationState == "show" ? "show" : (AnimationState == "hide" ? "hiding" : ""))}";
@@ -87,7 +95,6 @@
         BackdropShow = false;
         AnimationState = "show";
         IsVisible = true;
-        await IsVisibleChanged.InvokeAsync(true);
         StateHasChanged();
 
         // Step 2: Wait until it's rendered before adding "show"
@@ -98,6 +105,9 @@
         // Step 3: Wait for transition
         await Task.Delay(300);
         IsAnimating = false;
+
+        if (OnShown.HasDelegate)
+            await OnShown.InvokeAsync();
     }
 
     public async Task Hide()
@@ -107,7 +117,6 @@
 
         AnimationState = "hide";
         BackdropShow = false;
-        await IsVisibleChanged.InvokeAsync(false);
         StateHasChanged();
 
         await Task.Delay(300); // allow transition to finish
@@ -117,5 +126,8 @@
         AnimationState = "";
         IsAnimating = false;
         StateHasChanged();
+
+        if (OnHidden.HasDelegate)
+            await OnHidden.InvokeAsync();
     }
 }
