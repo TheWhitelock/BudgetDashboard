@@ -7512,7 +7512,7 @@ textarea.form-control-lg {
   border-color: var(--bs-danger-border-subtle) !important;
 }
 
-.border-light-subtle, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover {
+.border-light-subtle {
   border-color: var(--bs-light-border-subtle) !important;
 }
 
@@ -11880,6 +11880,29 @@ textarea.form-control-lg {
   --bs-btn-disabled-color: #fff;
 }
 
+div.editable-field-container h5.editable-title, div.editable-field-container .editable-title.h5,
+div.editable-field-container span.editable-title,
+td.editable-field-container h5.editable-title,
+td.editable-field-container .editable-title.h5,
+td.editable-field-container span.editable-title {
+  cursor: pointer;
+  height: 38px;
+  margin-left: -4px !important;
+  transition: color 0.2s ease-in-out;
+}
+div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
+div.editable-field-container span.editable-title:hover,
+td.editable-field-container h5.editable-title:hover,
+td.editable-field-container .editable-title.h5:hover,
+td.editable-field-container span.editable-title:hover {
+  outline: 1px solid #dee2e6;
+  color: #FF6200;
+}
+div.editable-field-container input.editable-input,
+td.editable-field-container input.editable-input {
+  min-width: 200px;
+}
+
 nav.nav-menu {
   background: #f5f7f9;
   min-width: 300px;
@@ -11912,16 +11935,4 @@ div.budget-card:hover {
 }
 div.budget-card:active {
   filter: brightness(92%);
-}
-
-div.editable-field-container h5.editable-title, div.editable-field-container .editable-title.h5 {
-  cursor: pointer;
-  height: 38px;
-  transition: all 0.2s ease-in-out;
-}
-div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover {
-  color: #FF6200;
-}
-div.editable-field-container input.editable-input {
-  min-width: 300px;
 }

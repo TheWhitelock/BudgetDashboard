@@ -6,40 +6,25 @@
 
 <Offcanvas @ref="BudgetCanvas" Position="start" Size="500px" OnHidden="HandleOffcanvasClosed">
     <HeaderContent>
-        <div class="editable-field-container">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-piggy-bank"/>
-                @if (IsEditingName)
-                {
-                    <form class="@FormValidationClass" novalidate>
-                        <input @bind="EditableName"
-                            @bind:event="oninput"
-                            @onblur="OnNameBlur"
-                            @onkeydown="HandleKeyPress"
-                            maxlength="50"
-                            required
-                            class="editable-input form-control"
-                            placeholder="Enter budget name..."
-                            @ref="NameInputRef" />
-
-                        @* <div class="invalid-feedback">
-                            Please provide a name.
-                        </div> *@
-                    </form>
-                }
-                else
-                {
+        <div class="d-flex align-items-center gap-2 editable-field-container">
+            <i class="fas fa-piggy-bank"/>
+            <InlineEditor 
+                @ref="NameEditor"
+                FieldContent="@WorkingBudget.Name"
+                FieldPlaceholder="Enter budget name..."
+                OnSaved="SaveName">
+                <TextContent Context="StartEditingAction">
                     <h5 class="border rounded border-white m-0 p-1 fw-bolder d-flex align-items-center editable-title" 
-                        @onclick="StartEditingName">@WorkingBudget.Name</h5>
-                }
-            </div>
+                        @onclick="StartEditingAction">@WorkingBudget.Name</h5>
+                </TextContent>
+            </InlineEditor>
         </div>
     </HeaderContent>
 
     <BodyContent>
         <div class="table-responsive">
-            <table class="table table-sm align-middle">
-                <thead class="table-light">
+            <table class="table align-middle">
+                <thead>
                     <tr>
                         <th style="width: 50%">Name</th>
                         <th style="width: 25%">Amount (€)</th>
@@ -51,21 +36,16 @@
                     @foreach (var item in WorkingBudget.Items)
                     {
                         <tr>
-                            <td>
-                                @if (EditingItem == item && EditingField == "Name")
-                                {
-                                    <input @bind="EditableItemName"
-                                           @bind:event="oninput"
-                                           @onblur="() => SaveItem(item)"
-                                           @onkeydown="(e) => HandleItemKeyPress(e, item)"
-                                           class="form-control form-control-sm"
-                                           autofocus />
-                                }
-                                else
-                                {
-                                    <span @onclick='() => StartEditingItem(item, "Name")'
-                                          style="cursor: pointer;">@item.Name</span>
-                                }
+                            <td class="editable-field-container">
+                                <InlineEditor
+                                    FieldContent="@item.Name"
+                                    FieldPlaceholder="Enter item name..."
+                                    OnSaved="SaveItemName">
+                                    <TextContent Context="StartEditingAction">
+                                        <span class="rounded m-0 d-flex align-items-center editable-title" 
+                                            @onclick="StartEditingAction">@item.Name</span>
+                                    </TextContent>
+                                </InlineEditor>
                             </td>
                             <td>
                                 @if (EditingItem == item && EditingField == "Amount")
@@ -117,13 +97,11 @@
     private Offcanvas BudgetCanvas = default!;
     private Budget WorkingBudget = new();
 
-    private string FormValidationClass = "";
-
     // Name editing
     private bool IsEditingName { get; set; }
     private string EditableName { get; set; } = "";
-    private ElementReference NameInputRef;
-    private bool ShouldFocusInput;
+
+    private InlineEditor? NameEditor;
 
     // Item editing
     private BudgetItem? EditingItem { get; set; }
@@ -133,7 +111,6 @@
 
     public async Task ShowAsync(Budget? budget = null)
     {
-        // Initialize for create or edit
         if (budget is null)
         {
             WorkingBudget = new Budget
@@ -142,7 +119,7 @@
                 CreatedOn = DateOnly.FromDateTime(DateTime.Now),
                 Items = new List<BudgetItem>()
             };
-            StartEditingName();
+            NameEditor?.BeginEdit();
         }
         else
         {
@@ -160,66 +137,29 @@
         EditingItem = null;
         EditingField = "";
         EditableName = "";
-        FormValidationClass = "";
-        ShouldFocusInput = false;
 
         StateHasChanged();
     }
 
-    private async Task SaveName()
+    private async Task SaveName(string NewName)
     {
-        // Mark form as validated to trigger Bootstrap styles
-        FormValidationClass = "was-validated";
-
-        // If invalid, stop here
-        if (string.IsNullOrWhiteSpace(EditableName))
+        if (NewName != WorkingBudget.Name)
         {
-            StateHasChanged();
-            return;
-        }
-
-        // Clear validation after a successful save
-        FormValidationClass = "";
-
-        if (EditableName != WorkingBudget.Name)
-        {
-            WorkingBudget.Name = EditableName;
+            WorkingBudget.Name = NewName;
             Db.Budgets.Update(WorkingBudget);
             await Db.SaveChangesAsync();
             await OnSaved.InvokeAsync();
         }
-
-        IsEditingName = false;
-        StateHasChanged();
     }
 
-
-    private void StartEditingName()
+    private async Task SaveItemName(string NewName)
     {
-        EditableName = WorkingBudget.Name;
-        IsEditingName = true;
-        ShouldFocusInput = true;
-    }
-
-    private async Task OnNameBlur(FocusEventArgs e) => await SaveName();
-
-    private async Task HandleKeyPress(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-            await SaveName();
-        else if (e.Key == "Escape")
+        if (EditingItem != null && NewName != EditingItem.Name)
         {
-            IsEditingName = false;
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (ShouldFocusInput)
-        {
-            ShouldFocusInput = false;
-            await NameInputRef.FocusAsync();
+            EditingItem.Name = NewName;
+            Db.BudgetItems.Update(EditingItem);
+            await Db.SaveChangesAsync();
+            await OnSaved.InvokeAsync();
         }
     }
 

@@ -8,6 +8,8 @@
     --bs-btn-disabled-color: #{$white};
 }
 
+@import "../../Components/Components/InlineEditor.razor.scss";
+
 @import "../../Components/Layout/MainLayout.razor.scss";
 @import "../../Components/Pages/Budgets.razor.scss";
 @import "../../Components/Shared/BudgetCard.razor.scss";

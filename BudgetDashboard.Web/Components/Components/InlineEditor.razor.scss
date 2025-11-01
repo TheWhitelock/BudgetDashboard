@@ -1,0 +1,20 @@
+div.editable-field-container,
+td.editable-field-container {
+    h5.editable-title,
+    span.editable-title {
+        cursor: pointer;
+        height: 38px;
+
+        transition: color 0.2s ease-in-out;
+
+        &:hover {
+            outline: 1px solid $border-color;
+            outline-offset: 4px;
+            color: $primary;
+        }
+    }
+
+    input.editable-input {
+        min-width: 200px;
+    }
+}

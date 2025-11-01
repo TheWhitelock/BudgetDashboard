@@ -15,22 +15,3 @@ div.budget-card {
         filter: brightness(92%);
     }
 }
-
-div.editable-field-container {
-    h5.editable-title {
-        cursor: pointer;
-        height: 38px;
-
-        transition: all 0.2s ease-in-out;
-
-        &:hover {
-            @extend .border-light-subtle;
-
-            color: $primary;
-        }
-    }
-
-    input.editable-input {
-        min-width: 300px;
-    }
-}
