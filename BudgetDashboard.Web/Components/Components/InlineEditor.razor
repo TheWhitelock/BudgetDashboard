@@ -1,104 +1,108 @@
+@typeparam TContext
+
 @if (IsEditing)
-    {
-        <form class="@FormValidationClass" novalidate>
-            <input @bind="FieldContent"
-                @bind:event="oninput"
-                @onblur="HandleBlur"
-                @onkeydown="HandleKeyPress"
-                maxlength="50"
-                required
-                class="editable-input form-control"
-                placeholder="@FieldPlaceholder"
-                @ref="InputRef" />
-        </form>
-    }
-    else
-    {
-        @TextContent?.Invoke(() => StartEditing())
-    }
+{
+    <form class="@FormValidationClass" novalidate @onsubmit="HandleSubmitAsync">
+        <input @bind="FieldContent"
+               @bind:event="oninput"
+               @onblur="HandleBlurAsync"
+               @onkeydown="HandleKeyPressAsync"
+               maxlength="50"
+               required
+               class="editable-input form-control"
+               placeholder="@FieldPlaceholder"
+               @ref="InputRef" />
+    </form>
+}
+else
+{
+    @TextContent?.Invoke(() => StartEditing())
+}
 
 @code {
-    /// <summary>
-    /// The text content displayed when not editing.
-    /// </summary>
     [Parameter] public RenderFragment<Action>? TextContent { get; set; }
-
-    /// <summary>
-    /// The value of the field.
-    /// </summary>
     [Parameter] public string FieldContent { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The placeholder of the field.
-    /// </summary>
     [Parameter] public string FieldPlaceholder { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Event callback invoked when the field is saved.
-    /// </summary>
-    [Parameter] public EventCallback<string> OnSaved { get; set; }
+    [Parameter] public TContext? Context { get; set; }
+    [Parameter] public EventCallback<(string NewValue, TContext? Context)> OnSaved { get; set; }
 
     private string OriginalContent { get; set; } = string.Empty;
-
     private ElementReference InputRef;
-
     private bool IsEditing { get; set; }
-
     private bool IsCancelled { get; set; }
-
     private string FormValidationClass = "";
 
-    public void BeginEdit()
+    public void BeginEdit() => StartEditing();
+    public void StopEdit() => StopEditing();
+
+    private async void StartEditing()
     {
-        StartEditing();
-    }
-    
-    private void StartEditing()
-    {
-        OriginalContent = FieldContent;
+        OriginalContent = FieldContent ?? string.Empty;
         IsEditing = true;
         IsCancelled = false;
-        StateHasChanged();
-        _ = Task.Delay(10).ContinueWith(_ => InputRef.FocusAsync());
+        await InvokeAsync(StateHasChanged);
+
+        // slight delay so DOM is ready before focusing
+        _ = Task.Delay(50).ContinueWith(async _ =>
+        {
+            try { await InvokeAsync(async () => await InputRef.FocusAsync()); }
+            catch { /* ignore focus errors */ }
+        });
     }
 
-    private async Task HandleBlur(FocusEventArgs e) => await SaveField();
+    private async void StopEditing()
+    {
+        IsEditing = false;
+        FieldContent = OriginalContent;
+        FormValidationClass = "";
+        await InvokeAsync(StateHasChanged);
+    }
 
-    private async Task HandleKeyPress(KeyboardEventArgs e)
+    private async Task HandleKeyPressAsync(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
-            await SaveField();
+        {
+            await SaveFieldAsync();
+        }
         else if (e.Key == "Escape")
         {
             IsCancelled = true;
             IsEditing = false;
-            StateHasChanged();
+            FieldContent = OriginalContent;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async Task SaveField()
+    private async Task HandleBlurAsync(FocusEventArgs _)
     {
-        if (IsCancelled) return;
-        
-        // Mark form as validated to trigger Bootstrap styles
+        if (!IsCancelled)
+            await SaveFieldAsync();
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        await SaveFieldAsync();
+    }
+
+    private async Task SaveFieldAsync()
+    {
+        if (IsCancelled)
+            return;
+
         FormValidationClass = "was-validated";
 
-        // If invalid, stop here
         if (string.IsNullOrWhiteSpace(FieldContent))
         {
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             return;
         }
 
-        // Clear validation after a successful save
         FormValidationClass = "";
 
-        if (FieldContent != OriginalContent)
-        {
-            await OnSaved.InvokeAsync(FieldContent);
-        }
+        if (!string.Equals(FieldContent, OriginalContent, StringComparison.Ordinal))
+            await OnSaved.InvokeAsync((FieldContent, Context));
 
         IsEditing = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

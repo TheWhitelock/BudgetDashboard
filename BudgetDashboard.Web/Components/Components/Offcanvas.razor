@@ -103,7 +103,7 @@
         StateHasChanged();
 
         // Step 3: Wait for transition
-        await Task.Delay(300);
+        await Task.Delay(200);
         IsAnimating = false;
 
         if (OnShown.HasDelegate)
@@ -119,7 +119,7 @@
         BackdropShow = false;
         StateHasChanged();
 
-        await Task.Delay(300); // allow transition to finish
+        await Task.Delay(200); // allow transition to finish
 
         IsVisible = false;
         BackdropVisible = false;

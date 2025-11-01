@@ -11887,7 +11887,6 @@ td.editable-field-container .editable-title.h5,
 td.editable-field-container span.editable-title {
   cursor: pointer;
   height: 38px;
-  margin-left: -4px !important;
   transition: color 0.2s ease-in-out;
 }
 div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
