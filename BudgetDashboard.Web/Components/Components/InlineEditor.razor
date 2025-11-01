@@ -10,6 +10,7 @@
                maxlength="50"
                required
                class="editable-input form-control"
+               style="@InputStyle"
                placeholder="@FieldPlaceholder"
                @ref="InputRef" />
     </form>
@@ -25,6 +26,7 @@ else
     [Parameter] public string FieldPlaceholder { get; set; } = string.Empty;
     [Parameter] public TContext? Context { get; set; }
     [Parameter] public EventCallback<(string NewValue, TContext? Context)> OnSaved { get; set; }
+    [Parameter] public string InputStyle { get; set; } = string.Empty;
 
     private string OriginalContent { get; set; } = string.Empty;
     private ElementReference InputRef;

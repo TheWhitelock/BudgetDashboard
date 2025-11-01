@@ -5,11 +5,13 @@ td.editable-field-container {
         cursor: pointer;
         height: 38px;
 
-        transition: color 0.2s ease-in-out;
+        transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
         &:hover {
-            outline: 1px solid $border-color;
-            // outline-offset: 4px;
+            box-shadow:
+                -4px -1px 0 1px $border-color,
+                 4px 1px 0 1px $border-color;
+
             color: $primary;
         }
     }

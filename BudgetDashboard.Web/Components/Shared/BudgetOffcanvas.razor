@@ -15,6 +15,7 @@
                 Context="@Budget"
                 FieldContent="@(Budget?.Name ?? string.Empty)"
                 FieldPlaceholder="Enter budget name..."
+                InputStyle="min-width: 300px;"
                 OnSaved="SaveNameAsync">
                 <TextContent Context="StartEditingAction">
                     <h5 class="rounded m-0 fw-bolder d-flex align-items-center editable-title" 
@@ -23,66 +24,66 @@
             </InlineEditor>
         </div>
     </HeaderContent>
-
     <BodyContent>
         @if (Budget is not null)
         {
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th style="width: 50%">Name</th>
-                            <th style="width: 25%">Amount (€)</th>
-                            <th style="width: 15%">Optional</th>
-                            <th style="width: 10%"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Budget.Items)
-                        {
-                            <tr>
-                                <td class="editable-field-container">
-                                    <InlineEditor TContext="BudgetItem"
-                                                  Context="@item"
-                                                  FieldContent="@item.Name"
-                                                  FieldPlaceholder="Enter item name..."
-                                                  OnSaved="SaveItemNameAsync">
-                                        <TextContent Context="StartEditingAction">
-                                            <span class="rounded m-0 d-flex align-items-center editable-title"
-                                                  @onclick="StartEditingAction">@item.Name</span>
-                                        </TextContent>
-                                    </InlineEditor>
-                                </td>
-                                <td class="editable-field-container">
-                                    <InlineEditor TContext="BudgetItem"
-                                                  Context="@item"
-                                                  FieldContent="@item.EstimatedAmount.ToString("G", CultureInfo.CurrentCulture)"
-                                                  FieldPlaceholder="Enter item amount..."
-                                                  OnSaved="SaveItemAmountAsync">
-                                        <TextContent Context="StartEditingAction">
-                                            <span class="rounded m-0 d-flex align-items-center editable-title"
-                                                  @onclick="StartEditingAction">@item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
-                                        </TextContent>
-                                    </InlineEditor>
-                                </td>
-                                <td class="text-center">
-                                    <input type="checkbox"
-                                           checked="@item.IsOptional"
-                                           @onchange="(e) => HandleCheckboxChange(e, item)" />
-                                </td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-danger"
-                                            title="Delete item"
-                                            @onclick="() => DeleteItemAsync(item)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="container">
+                <div class="row d-flex align-items-center budget-grid-header">
+                    <div class="col-5">Name</div>
+                    <div class="col-3">Amount (€)</div>
+                    <div class="col-3 text-center">Optional</div>
+                    <div class="col-1"></div>
+                </div>
+
+                @foreach (var item in Budget.Items)
+                {
+                    <div class="row d-flex align-items-center budget-grid-row">
+                        <div class="col-5 editable-field-container">
+                            <InlineEditor TContext="BudgetItem"
+                                        Context="@item"
+                                        FieldContent="@item.Name"
+                                        FieldPlaceholder="Enter item name..."
+                                        InputStyle="min-width: 150px;"
+                                        OnSaved="SaveItemNameAsync">
+                                <TextContent Context="StartEditingAction">
+                                    <span class="rounded m-0 d-flex align-items-center editable-title"
+                                        @onclick="StartEditingAction">@item.Name</span>
+                                </TextContent>
+                            </InlineEditor>
+                        </div>
+
+                        <div class="col-3 editable-field-container">
+                            <InlineEditor TContext="BudgetItem"
+                                        Context="@item"
+                                        FieldContent="@item.EstimatedAmount.ToString("G", CultureInfo.CurrentCulture)"
+                                        FieldPlaceholder="Enter item amount..."
+                                        InputStyle="min-width: 100px;"
+                                        OnSaved="SaveItemAmountAsync">
+                                <TextContent Context="StartEditingAction">
+                                    <span class="rounded m-0 d-flex align-items-center editable-title"
+                                        @onclick="StartEditingAction">@item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
+                                </TextContent>
+                            </InlineEditor>
+                        </div>
+
+                        <div class="col-3 text-center">
+                            <input type="checkbox"
+                                checked="@item.IsOptional"
+                                @onchange="(e) => HandleCheckboxChange(e, item)" />
+                        </div>
+
+                        <div class="col-1 text-end">
+                            <button class="btn btn-sm btn-outline-danger"
+                                    title="Delete item"
+                                    @onclick="() => DeleteItemAsync(item)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
-            <button class="btn btn-primary d-flex align-items-center me-3 gap-2"
+
+            <button class="btn btn-primary d-flex align-items-center me-3 gap-2 mt-3"
                     title="@(Budget?.Id == 0 ? "Enter a name first" : "Add new item")"
                     disabled="@(Budget?.Id == 0)"
                     @onclick="AddItemAsync">
