@@ -20,6 +20,7 @@ div.budget-card {
 div.budget-grid-header {
     height: 34px;
     font-weight: 600;
+    font-size: 90%;
     background-color: $gray-150;
     color: $gray-600;
 }
@@ -28,8 +29,4 @@ div.budget-grid-row {
     height: 40px;
     border-bottom: 1px solid $border-color;
     transition: background-color 0.2s ease;
-    
-    // &:hover {
-    //     background-color: $gray-100;
-    // }
 }

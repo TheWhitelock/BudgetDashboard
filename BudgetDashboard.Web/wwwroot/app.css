@@ -11888,6 +11888,12 @@ td.editable-field-container span.editable-title:hover {
   --bs-btn-disabled-color: #fff;
 }
 
+.btn-outline-primary {
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: #fff;
+}
+
 div.editable-field-container h5.editable-title, div.editable-field-container .editable-title.h5,
 div.editable-field-container span.editable-title,
 td.editable-field-container h5.editable-title,
@@ -11948,6 +11954,7 @@ div.budget-card:active {
 div.budget-grid-header {
   height: 34px;
   font-weight: 600;
+  font-size: 90%;
   background-color: #F1F3F5;
   color: #6c757d;
 }

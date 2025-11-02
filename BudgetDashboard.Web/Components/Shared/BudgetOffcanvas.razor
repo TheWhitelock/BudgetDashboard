@@ -32,7 +32,14 @@
                     <div class="col-5">NAME</div>
                     <div class="col-4">AMOUNT</div>
                     <div class="col-2 text-center">OPTIONAL</div>
-                    <div class="col-1"></div>
+                    <div class="col-1 text-end p-0">
+                        <button class="btn btn-sm btn-outline-primary"
+                                title="@(Budget?.Id == 0 ? "Enter a name first" : "Add new item")"
+                                disabled="@(Budget?.Id == 0)"
+                                @onclick="AddItemAsync">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
 
                 @foreach (var item in Budget.Items)
@@ -83,13 +90,33 @@
                 }
             </div>
 
-            <button class="btn btn-primary d-flex align-items-center me-3 gap-2 mt-3"
-                    title="@(Budget?.Id == 0 ? "Enter a name first" : "Add new item")"
-                    disabled="@(Budget?.Id == 0)"
-                    @onclick="AddItemAsync">
-                <i class="fas fa-plus"></i>
-                <span>Add</span>
-            </button>
+            @* <div class="d-flex justify-content-end">
+                <button class="btn btn-primary d-flex align-items-center gap-2 mt-3"
+                        title="@(Budget?.Id == 0 ? "Enter a name first" : "Add new item")"
+                        disabled="@(Budget?.Id == 0)"
+                        @onclick="AddItemAsync">
+                    <i class="fas fa-plus"></i>
+                    <span>Add</span>
+                </button>
+            </div> *@
+            
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-secondary d-flex align-items-center gap-2"
+                        title="Clone this budget"
+                        @onclick="CloneBudgetAsync">
+                    <i class="fas fa-clone"></i>
+                    <span>Clone</span>
+                </button>
+
+                <button class="btn btn-danger d-flex align-items-center gap-2"
+                        title="Delete this budget"
+                        @onclick="DeleteBudgetAsync">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                </button>
+            </div>
         }
     </BodyContent>
 </Offcanvas>
@@ -190,13 +217,8 @@
         if (Budget is null)
             return;
 
-        // Persist the budget if new
         if (Budget.Id == 0)
-        {
             return;
-            @* Db.Budgets.Add(Budget);
-            await Db.SaveChangesAsync(); *@
-        }
 
         var newItem = new BudgetItem
         {
@@ -223,6 +245,42 @@
 
         Budget?.Items.Remove(item);
         await SaveAndNotifyAsync();
+    }
+    
+    private async Task CloneBudgetAsync()
+    {
+        if (Budget is null)
+            return;
+
+        var cloned = new Budget
+        {
+            Name = $"{Budget.Name} (Copy)",
+            CreatedOn = DateOnly.FromDateTime(DateTime.Now),
+            Items = Budget.Items.Select(i => new BudgetItem
+            {
+                Name = i.Name,
+                EstimatedAmount = i.EstimatedAmount,
+                IsOptional = i.IsOptional
+            }).ToList()
+        };
+
+        Db.Budgets.Add(cloned);
+        await Db.SaveChangesAsync();
+
+        await BudgetCanvas!.Hide();
+        await OnSaved.InvokeAsync();
+    }
+
+    private async Task DeleteBudgetAsync()
+    {
+        if (Budget is null)
+            return;
+
+        Db.Budgets.Remove(Budget);
+        await Db.SaveChangesAsync();
+
+        await BudgetCanvas!.Hide();
+        await OnSaved.InvokeAsync();
     }
 
     private async Task SaveAndNotifyAsync()
