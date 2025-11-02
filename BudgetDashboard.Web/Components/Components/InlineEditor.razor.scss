@@ -3,16 +3,19 @@ td.editable-field-container {
     h5.editable-title,
     span.editable-title {
         cursor: pointer;
-        height: 38px;
-
-        transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        min-height: 34px;
+        border-color: transparent!important;
+        transition:
+            color 0.2s ease-in-out,
+            padding 0.2s ease-in-out,
+            border-color 0.2s ease-in-out;
 
         &:hover {
-            box-shadow:
-                -4px -1px 0 1px $border-color,
-                 4px 1px 0 1px $border-color;
+            @extend .px-2;
+            @extend .border-opacity-100;
 
             color: $primary;
+            border-color: $border-color!important;
         }
     }
 

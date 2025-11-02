@@ -5,7 +5,7 @@
 @using System.Globalization
 @inject BudgetContext Db
 
-<Offcanvas @ref="BudgetCanvas" Position="start" Size="500px" OnHidden="HandleOffcanvasClosed">
+<Offcanvas @ref="BudgetCanvas" Position="start" Size="600px" OnHidden="HandleOffcanvasClosed">
     <HeaderContent>
         <div class="d-flex align-items-center gap-2 editable-field-container">
             <i class="fas fa-piggy-bank"/>
@@ -18,7 +18,7 @@
                 InputStyle="min-width: 300px;"
                 OnSaved="SaveNameAsync">
                 <TextContent Context="StartEditingAction">
-                    <h5 class="rounded m-0 fw-bolder d-flex align-items-center editable-title" 
+                    <h5 class="border rounded m-0 fw-bolder d-flex align-items-center  text-nowrap editable-title" 
                         @onclick="StartEditingAction">@Budget?.Name</h5>
                 </TextContent>
             </InlineEditor>
@@ -29,9 +29,9 @@
         {
             <div class="container">
                 <div class="row d-flex align-items-center budget-grid-header">
-                    <div class="col-5">Name</div>
-                    <div class="col-3">Amount (€)</div>
-                    <div class="col-3 text-center">Optional</div>
+                    <div class="col-5">NAME</div>
+                    <div class="col-4">AMOUNT</div>
+                    <div class="col-2 text-center">OPTIONAL</div>
                     <div class="col-1"></div>
                 </div>
 
@@ -46,13 +46,13 @@
                                         InputStyle="min-width: 150px;"
                                         OnSaved="SaveItemNameAsync">
                                 <TextContent Context="StartEditingAction">
-                                    <span class="rounded m-0 d-flex align-items-center editable-title"
+                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title"
                                         @onclick="StartEditingAction">@item.Name</span>
                                 </TextContent>
                             </InlineEditor>
                         </div>
 
-                        <div class="col-3 editable-field-container">
+                        <div class="col-4 editable-field-container">
                             <InlineEditor TContext="BudgetItem"
                                         Context="@item"
                                         FieldContent="@item.EstimatedAmount.ToString("G", CultureInfo.CurrentCulture)"
@@ -60,19 +60,19 @@
                                         InputStyle="min-width: 100px;"
                                         OnSaved="SaveItemAmountAsync">
                                 <TextContent Context="StartEditingAction">
-                                    <span class="rounded m-0 d-flex align-items-center editable-title"
-                                        @onclick="StartEditingAction">@item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
+                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title"
+                                        @onclick="StartEditingAction">€ @item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
                                 </TextContent>
                             </InlineEditor>
                         </div>
 
-                        <div class="col-3 text-center">
+                        <div class="col-2 text-center">
                             <input type="checkbox"
                                 checked="@item.IsOptional"
                                 @onchange="(e) => HandleCheckboxChange(e, item)" />
                         </div>
 
-                        <div class="col-1 text-end">
+                        <div class="col-1 text-end p-0">
                             <button class="btn btn-sm btn-outline-danger"
                                     title="Delete item"
                                     @onclick="() => DeleteItemAsync(item)">

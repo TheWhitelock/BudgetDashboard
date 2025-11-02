@@ -7556,7 +7556,11 @@ textarea.form-control-lg {
   --bs-border-opacity: 0.75;
 }
 
-.border-opacity-100 {
+.border-opacity-100, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
+div.editable-field-container span.editable-title:hover,
+td.editable-field-container h5.editable-title:hover,
+td.editable-field-container .editable-title.h5:hover,
+td.editable-field-container span.editable-title:hover {
   --bs-border-opacity: 1;
 }
 
@@ -8040,7 +8044,11 @@ textarea.form-control-lg {
   padding-left: 0.25rem !important;
 }
 
-.px-2 {
+.px-2, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
+div.editable-field-container span.editable-title:hover,
+td.editable-field-container h5.editable-title:hover,
+td.editable-field-container .editable-title.h5:hover,
+td.editable-field-container span.editable-title:hover {
   padding-right: 0.5rem !important;
   padding-left: 0.5rem !important;
 }
@@ -11886,16 +11894,17 @@ td.editable-field-container h5.editable-title,
 td.editable-field-container .editable-title.h5,
 td.editable-field-container span.editable-title {
   cursor: pointer;
-  height: 38px;
-  transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  min-height: 34px;
+  border-color: transparent !important;
+  transition: color 0.2s ease-in-out, padding 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
 div.editable-field-container span.editable-title:hover,
 td.editable-field-container h5.editable-title:hover,
 td.editable-field-container .editable-title.h5:hover,
 td.editable-field-container span.editable-title:hover {
-  box-shadow: -4px -1px 0 1px #dee2e6, 4px 1px 0 1px #dee2e6;
   color: #FF6200;
+  border-color: #dee2e6 !important;
 }
 div.editable-field-container input.editable-input,
 td.editable-field-container input.editable-input {
@@ -11937,16 +11946,14 @@ div.budget-card:active {
 }
 
 div.budget-grid-header {
-  height: 40px;
+  height: 34px;
   font-weight: 600;
-  background-color: #e9ecef;
+  background-color: #F1F3F5;
+  color: #6c757d;
 }
 
 div.budget-grid-row {
   height: 40px;
   border-bottom: 1px solid #dee2e6;
   transition: background-color 0.2s ease;
-}
-div.budget-grid-row:hover {
-  background-color: #f8f9fa;
 }
