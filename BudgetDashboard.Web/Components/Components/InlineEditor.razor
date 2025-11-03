@@ -12,16 +12,17 @@
                class="editable-input form-control"
                style="@InputStyle"
                placeholder="@FieldPlaceholder"
-               @ref="InputRef" />
+               @ref="InputRef"
+               tabindex="0" />
     </form>
 }
 else
 {
-    @TextContent?.Invoke(() => StartEditing())
+    <div @onfocus="HandleFocusAsync" @onclick="StartEditing" tabindex="0">@TextContent</div>
 }
 
 @code {
-    [Parameter] public RenderFragment<Action>? TextContent { get; set; }
+    [Parameter] public RenderFragment? TextContent { get; set; }
     [Parameter] public string FieldContent { get; set; } = string.Empty;
     [Parameter] public string FieldPlaceholder { get; set; } = string.Empty;
     [Parameter] public TContext? Context { get; set; }
@@ -79,6 +80,12 @@ else
     {
         if (!IsCancelled)
             await SaveFieldAsync();
+    }
+
+    private async Task HandleFocusAsync(FocusEventArgs _)
+    {
+        if (!IsEditing)
+            StartEditing();
     }
 
     private async Task HandleSubmitAsync()

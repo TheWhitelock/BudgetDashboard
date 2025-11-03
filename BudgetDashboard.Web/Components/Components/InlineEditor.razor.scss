@@ -1,7 +1,7 @@
 div.editable-field-container,
 td.editable-field-container {
-    h5.editable-title,
-    span.editable-title {
+    div > h5.editable-title,
+    div > span.editable-title {
         cursor: pointer;
         min-height: 34px;
         border-color: transparent!important;

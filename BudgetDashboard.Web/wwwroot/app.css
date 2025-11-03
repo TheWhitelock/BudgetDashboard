@@ -7556,11 +7556,11 @@ textarea.form-control-lg {
   --bs-border-opacity: 0.75;
 }
 
-.border-opacity-100, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
-div.editable-field-container span.editable-title:hover,
-td.editable-field-container h5.editable-title:hover,
-td.editable-field-container .editable-title.h5:hover,
-td.editable-field-container span.editable-title:hover {
+.border-opacity-100, div.editable-field-container div > h5.editable-title:hover, div.editable-field-container div > .editable-title.h5:hover,
+div.editable-field-container div > span.editable-title:hover,
+td.editable-field-container div > h5.editable-title:hover,
+td.editable-field-container div > .editable-title.h5:hover,
+td.editable-field-container div > span.editable-title:hover {
   --bs-border-opacity: 1;
 }
 
@@ -8044,11 +8044,11 @@ td.editable-field-container span.editable-title:hover {
   padding-left: 0.25rem !important;
 }
 
-.px-2, div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
-div.editable-field-container span.editable-title:hover,
-td.editable-field-container h5.editable-title:hover,
-td.editable-field-container .editable-title.h5:hover,
-td.editable-field-container span.editable-title:hover {
+.px-2, div.editable-field-container div > h5.editable-title:hover, div.editable-field-container div > .editable-title.h5:hover,
+div.editable-field-container div > span.editable-title:hover,
+td.editable-field-container div > h5.editable-title:hover,
+td.editable-field-container div > .editable-title.h5:hover,
+td.editable-field-container div > span.editable-title:hover {
   padding-right: 0.5rem !important;
   padding-left: 0.5rem !important;
 }
@@ -11894,21 +11894,21 @@ td.editable-field-container span.editable-title:hover {
   --bs-btn-disabled-color: #fff;
 }
 
-div.editable-field-container h5.editable-title, div.editable-field-container .editable-title.h5,
-div.editable-field-container span.editable-title,
-td.editable-field-container h5.editable-title,
-td.editable-field-container .editable-title.h5,
-td.editable-field-container span.editable-title {
+div.editable-field-container div > h5.editable-title, div.editable-field-container div > .editable-title.h5,
+div.editable-field-container div > span.editable-title,
+td.editable-field-container div > h5.editable-title,
+td.editable-field-container div > .editable-title.h5,
+td.editable-field-container div > span.editable-title {
   cursor: pointer;
   min-height: 34px;
   border-color: transparent !important;
   transition: color 0.2s ease-in-out, padding 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
-div.editable-field-container h5.editable-title:hover, div.editable-field-container .editable-title.h5:hover,
-div.editable-field-container span.editable-title:hover,
-td.editable-field-container h5.editable-title:hover,
-td.editable-field-container .editable-title.h5:hover,
-td.editable-field-container span.editable-title:hover {
+div.editable-field-container div > h5.editable-title:hover, div.editable-field-container div > .editable-title.h5:hover,
+div.editable-field-container div > span.editable-title:hover,
+td.editable-field-container div > h5.editable-title:hover,
+td.editable-field-container div > .editable-title.h5:hover,
+td.editable-field-container div > span.editable-title:hover {
   color: #FF6200;
   border-color: #dee2e6 !important;
 }

@@ -17,9 +17,8 @@
                 FieldPlaceholder="Enter budget name..."
                 InputStyle="min-width: 300px;"
                 OnSaved="SaveNameAsync">
-                <TextContent Context="StartEditingAction">
-                    <h5 class="border rounded m-0 fw-bolder d-flex align-items-center  text-nowrap editable-title" 
-                        @onclick="StartEditingAction">@Budget?.Name</h5>
+                <TextContent>
+                    <h5 class="border rounded m-0 fw-bolder d-flex align-items-center  text-nowrap editable-title">@Budget?.Name</h5>
                 </TextContent>
             </InlineEditor>
         </div>
@@ -52,9 +51,8 @@
                                         FieldPlaceholder="Enter item name..."
                                         InputStyle="min-width: 150px;"
                                         OnSaved="SaveItemNameAsync">
-                                <TextContent Context="StartEditingAction">
-                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title"
-                                        @onclick="StartEditingAction">@item.Name</span>
+                                <TextContent>
+                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title">@item.Name</span>
                                 </TextContent>
                             </InlineEditor>
                         </div>
@@ -66,9 +64,8 @@
                                         FieldPlaceholder="Enter item amount..."
                                         InputStyle="min-width: 100px;"
                                         OnSaved="SaveItemAmountAsync">
-                                <TextContent Context="StartEditingAction">
-                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title"
-                                        @onclick="StartEditingAction">€ @item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
+                                <TextContent>
+                                    <span class="border rounded py-1 m-0 d-flex align-items-center text-nowrap editable-title">€ @item.EstimatedAmount.ToString("N2", CultureInfo.CurrentCulture)</span>
                                 </TextContent>
                             </InlineEditor>
                         </div>
@@ -89,16 +86,6 @@
                     </div>
                 }
             </div>
-
-            @* <div class="d-flex justify-content-end">
-                <button class="btn btn-primary d-flex align-items-center gap-2 mt-3"
-                        title="@(Budget?.Id == 0 ? "Enter a name first" : "Add new item")"
-                        disabled="@(Budget?.Id == 0)"
-                        @onclick="AddItemAsync">
-                    <i class="fas fa-plus"></i>
-                    <span>Add</span>
-                </button>
-            </div> *@
             
             <hr class="my-4" />
 
