@@ -1,0 +1,94 @@
+@page "/login"
+@using Microsoft.AspNetCore.Identity
+@using BudgetDashboard.Data.Entities
+@using System.ComponentModel.DataAnnotations
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager Nav
+
+<h2 class="text-2xl font-semibold mb-4">Sign In</h2>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText @bind-Value="loginModel.Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+    </div>
+
+    <div class="mb-3 form-check">
+        <InputCheckbox @bind-Value="loginModel.RememberMe" class="form-check-input" />
+        <label class="form-check-label">Remember me</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@isLoading">
+        @if (isLoading)
+        {
+            <span>Signing in...</span>
+        }
+        else
+        {
+            <span>Login</span>
+        }
+    </button>
+</EditForm>
+
+<div class="mt-3">
+    <p>Don't have an account? <a href="/register">Register here</a>.</p>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private bool isLoading = false;
+    private string? ErrorMessage;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var result = await SignInManager.PasswordSignInAsync(
+            loginModel.Email,
+            loginModel.Password,
+            loginModel.RememberMe,
+            lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            Nav.NavigateTo("/dashboard", forceLoad: true);
+        }
+        else if (result.IsLockedOut)
+        {
+            ErrorMessage = "This account has been locked. Please try again later.";
+        }
+        else
+        {
+            ErrorMessage = "Invalid login attempt. Please check your email and password.";
+        }
+
+        isLoading = false;
+    }
+
+    public class LoginModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; } = string.Empty;
+
+        public bool RememberMe { get; set; }
+    }
+}

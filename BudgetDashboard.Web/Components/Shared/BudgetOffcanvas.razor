@@ -2,8 +2,11 @@
 @using BudgetDashboard.Data.Entities
 @using BudgetDashboard.Web.Components.Components
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @using System.Globalization
 @inject BudgetContext Db
+@inject AuthenticationStateProvider AuthStateProvider
 
 <Offcanvas @ref="BudgetCanvas" Position="start" Size="600px" OnHidden="HandleOffcanvasClosed">
     <HeaderContent>
@@ -18,7 +21,7 @@
                 InputStyle="min-width: 300px;"
                 OnSaved="SaveNameAsync">
                 <TextContent>
-                    <h5 class="border rounded m-0 fw-bolder d-flex align-items-center  text-nowrap editable-title">@Budget?.Name</h5>
+                    <h5 class="border rounded m-0 fw-bolder d-flex align-items-center text-nowrap editable-title">@Budget?.Name</h5>
                 </TextContent>
             </InlineEditor>
         </div>
@@ -114,6 +117,13 @@
 
     private Offcanvas? BudgetCanvas { get; set; }
     private InlineEditor<Budget>? NameEditor;
+    private string? CurrentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        CurrentUserId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
 
     public async Task ShowAsync(Budget? budget = null)
     {
@@ -123,11 +133,16 @@
             {
                 Name = "",
                 CreatedOn = DateOnly.FromDateTime(DateTime.Now),
-                Items = new List<BudgetItem>()
+                Items = new List<BudgetItem>(),
+                UserId = CurrentUserId // associate new budget with current user
             };
         }
         else
         {
+            // Ensure this budget belongs to the current user
+            if (budget.UserId != CurrentUserId)
+                return; // optionally show a message instead
+
             Budget = budget;
         }
 
@@ -176,7 +191,6 @@
         if (item is null)
             return;
 
-        // Parse using current culture so , or . both work for the user's locale
         if (decimal.TryParse(newAmountString, NumberStyles.Number, CultureInfo.CurrentCulture, out var newAmount)
             && newAmount != item.EstimatedAmount)
         {
@@ -201,10 +215,7 @@
 
     private async Task AddItemAsync()
     {
-        if (Budget is null)
-            return;
-
-        if (Budget.Id == 0)
+        if (Budget is null || Budget.Id == 0)
             return;
 
         var newItem = new BudgetItem
@@ -248,7 +259,8 @@
                 Name = i.Name,
                 EstimatedAmount = i.EstimatedAmount,
                 IsOptional = i.IsOptional
-            }).ToList()
+            }).ToList(),
+            UserId = CurrentUserId
         };
 
         Db.Budgets.Add(cloned);
@@ -261,6 +273,10 @@
     private async Task DeleteBudgetAsync()
     {
         if (Budget is null)
+            return;
+
+        // Optional safety check
+        if (Budget.UserId != CurrentUserId)
             return;
 
         Db.Budgets.Remove(Budget);

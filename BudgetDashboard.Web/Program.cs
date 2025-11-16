@@ -3,7 +3,12 @@
 /// </summary>
 using BudgetDashboard.Web.Components;
 using BudgetDashboard.Data;
+using BudgetDashboard.Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +18,20 @@ var builder = WebApplication.CreateBuilder(args);
 // - Razor Pages and Server-side Blazor.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(options => options.DetailedErrors = true);
 
 // Register Entity Framework Core DbContext (BudgetContext) configured to use SQLite
 // with the connection string named "DefaultConnection".
 builder.Services.AddDbContext<BudgetContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // TODO TIMWIT: Do something about this
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<BudgetContext>()
+.AddDefaultTokenProviders();
 
 var app = builder.Build();
 
@@ -42,9 +55,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// app.UseStaticFiles();
+app.UseStaticFiles();
 
 app.UseRouting();
+
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 // Enable antiforgery when using forms/components that require it.
 app.UseAntiforgery();

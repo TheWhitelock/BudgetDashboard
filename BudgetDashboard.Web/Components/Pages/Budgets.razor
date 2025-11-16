@@ -1,10 +1,15 @@
 @page "/dashboard"
+@attribute [Authorize]
+
 @using BudgetDashboard.Data
 @using BudgetDashboard.Data.Entities
 @using BudgetDashboard.Web.Components.Components
 @using BudgetDashboard.Web.Components.Shared
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @inject BudgetContext Db
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -76,16 +81,34 @@ else if (_budgets.Count == 0)
 
     protected override async Task OnInitializedAsync() => await LoadBudgets();
 
-private async Task LoadBudgets()
-{
-    var budgets = await Db.Budgets
-        .Include(b => b.Items)
-        .ToListAsync();
+    private async Task LoadBudgets()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-    _budgets = budgets
-        .OrderByDescending(b => b.Items?.Sum(i => i.EstimatedAmount) ?? 0m)
-        .ToList();
-}
+        if (user?.Identity is null || !user.Identity.IsAuthenticated)
+        {
+            _budgets = new();
+            return;
+        }
+
+        var appUser = await UserManager.GetUserAsync(user);
+        if (appUser is null)
+        {
+            _budgets = new();
+            return;
+        }
+
+        var budgets = await Db.Budgets
+            .Include(b => b.Items)
+            .Where(b => b.UserId == appUser.Id)
+            .ToListAsync();
+
+        _budgets = budgets
+            .OrderByDescending(b => b.Items?.Sum(i => i.EstimatedAmount) ?? 0m)
+            .ToList();
+    }
+
 
     private async Task CreateBudget()
     {

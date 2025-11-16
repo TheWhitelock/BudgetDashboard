@@ -1,5 +1,6 @@
 #nullable enable
 using BudgetDashboard.Data.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetDashboard.Data;
@@ -9,7 +10,7 @@ namespace BudgetDashboard.Data;
 /// Provides access to the <see cref="Budget"/> and <see cref="BudgetItem"/> entity sets
 /// and configures entity mappings, constraints, and relationships used by the application's data model.
 /// </summary>
-public class BudgetContext : DbContext
+public class BudgetContext : IdentityDbContext<ApplicationUser>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BudgetContext"/> class with the specified options.
@@ -45,6 +46,8 @@ public class BudgetContext : DbContext
     /// </remarks>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.Entity<Budget>(e =>
         {
             e.Property(x => x.Name).HasMaxLength(200).IsRequired();

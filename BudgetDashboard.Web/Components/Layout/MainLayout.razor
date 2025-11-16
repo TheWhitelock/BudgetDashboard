@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="d-flex min-vh-100">
     <!-- Sidebar -->
@@ -8,12 +9,41 @@
             <span class="fs-5 fw-semibold">Budget Dashboard</span>
         </a>
         <hr class="m-0" />
+        <!-- Auth section -->
+        <AuthorizeView>
+            <Authorized>
+                <div class="d-flex flex-column gap-2">
+                    <small class="text-muted">Signed in as:</small>
+                    <span class="fw-semibold">@context.User.Identity?.Name</span>
+                    <a class="btn btn-outline-secondary btn-sm mt-2"
+                       href="Identity/Account/Manage">Account</a>
+                    <form method="post" action="Identity/Account/Logout">
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+                <div class="d-flex flex-column gap-2">
+                    <a class="btn btn-outline-primary btn-sm w-100" href="Identity/Account/Login">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a class="btn btn-outline-success btn-sm w-100" href="Identity/Account/Register">
+                        <i class="fas fa-user-plus me-1"></i> Register
+                    </a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 
     <!-- Main content area -->
     <main class="flex-grow-1">
         <section class="p-5">
-            @Body
+            <CascadingAuthenticationState>
+                @Body
+            </CascadingAuthenticationState>
         </section>
     </main>
 </div>

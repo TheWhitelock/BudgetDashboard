@@ -4,12 +4,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DartSassBuilder" Version="1.1.0" />
     <PackageReference Include="bootstrap.sass" Version="5.3.8" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -48,19 +55,13 @@
       <_BootstrapScss Include="$(BootstrapSassRoot)\**\*.scss" />
     </ItemGroup>
 
-    <Copy
-      SourceFiles="@(_BootstrapScss)"
-      DestinationFiles="@(_BootstrapScss->'wwwroot\scss\vendor\bootstrap\scss\%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_BootstrapScss)" DestinationFiles="@(_BootstrapScss->'wwwroot\scss\vendor\bootstrap\scss\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
   <!-- Post-build: move compiled CSS file to wwwroot/css -->
   <Target Name="MoveCompiledCss" AfterTargets="Build">
     <MakeDir Directories="wwwroot/" />
-    <Move
-      SourceFiles="wwwroot/scss/app.css"
-      DestinationFiles="wwwroot/app.css"
-      Condition="Exists('wwwroot/scss/app.css')" />
+    <Move SourceFiles="wwwroot/scss/app.css" DestinationFiles="wwwroot/app.css" Condition="Exists('wwwroot/scss/app.css')" />
   </Target>
 
   <!-- Full Dart Sass build chain -->

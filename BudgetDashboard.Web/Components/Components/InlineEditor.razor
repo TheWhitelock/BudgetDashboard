@@ -38,7 +38,7 @@ else
     public void BeginEdit() => StartEditing();
     public void StopEdit() => StopEditing();
 
-    private async void StartEditing()
+    private async Task StartEditing()
     {
         OriginalContent = FieldContent ?? string.Empty;
         IsEditing = true;
@@ -85,7 +85,7 @@ else
     private async Task HandleFocusAsync(FocusEventArgs _)
     {
         if (!IsEditing)
-            StartEditing();
+            await StartEditing();
     }
 
     private async Task HandleSubmitAsync()
