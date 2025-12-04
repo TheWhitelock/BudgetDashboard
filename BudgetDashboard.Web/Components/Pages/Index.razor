@@ -1,9 +1,10 @@
 @page "/"
+@using BudgetDashboard.Web.Constants
 @inject NavigationManager NavigationManager
 
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo(RouteConstants.Pages.Dashboard);
     }
 }

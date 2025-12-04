@@ -1,4 +1,5 @@
 using BudgetDashboard.Web.Components;
+using BudgetDashboard.Web.Constants;
 using BudgetDashboard.Data;
 using BudgetDashboard.Data.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -35,9 +36,9 @@ builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStat
 // Cookie paths (still valid)
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
+    options.LoginPath = RouteConstants.Account.LoginPath;
+    options.AccessDeniedPath = RouteConstants.Account.LoginPath;
+    options.LogoutPath = RouteConstants.Account.LogoutPath;
 });
 
 var app = builder.Build();

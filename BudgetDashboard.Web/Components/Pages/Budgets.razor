@@ -4,6 +4,7 @@
 
 @using BudgetDashboard.Data
 @using BudgetDashboard.Data.Entities
+@using BudgetDashboard.Data.Extensions
 @using BudgetDashboard.Web.Components.Components
 @using BudgetDashboard.Web.Components.Shared
 @using Microsoft.EntityFrameworkCore
@@ -69,14 +70,7 @@ else if (_budgets.Count == 0)
         get
         {
             if (_budgets == null) return 0m;
-            decimal total = 0m;
-            foreach (var b in _budgets)
-            {
-                if (b.Items == null) continue;
-                foreach (var i in b.Items)
-                    total += i.EstimatedAmount;
-            }
-            return total;
+            return _budgets.GetTotalAcrossAllBudgets();
         }
     }
 

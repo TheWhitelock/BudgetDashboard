@@ -1,4 +1,5 @@
 @using BudgetDashboard.Data.Entities
+@using BudgetDashboard.Data.Extensions
 
 <div class="card budget-card" @onclick="() => OnEdit.InvokeAsync(Budget)" style="cursor: pointer;">
     <div class="card-body">
@@ -20,6 +21,6 @@
     [Parameter] public Budget Budget { get; set; } = default!;
     [Parameter] public EventCallback<Budget> OnEdit { get; set; }
 
-    private decimal TotalAmount => Budget.Items?.Sum(i => i.EstimatedAmount) ?? 0m;
-    private decimal OptionalAmount => Budget.Items?.Where(i => i.IsOptional).Sum(i => i.EstimatedAmount) ?? 0m;
+    private decimal TotalAmount => Budget.GetTotalAmount();
+    private decimal OptionalAmount => Budget.GetOptionalAmount();
 }

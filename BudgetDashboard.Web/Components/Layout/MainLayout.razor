@@ -1,6 +1,6 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
-@inject IJSRuntime JS
+@using BudgetDashboard.Web.Constants
 
 <div class="d-flex min-vh-100">
     <!-- Sidebar -->
@@ -24,10 +24,10 @@
 
             <NotAuthorized>
                 <div class="d-flex flex-column gap-2">
-                    <a class="btn btn-outline-primary btn-sm w-100" href="/Account/Login">
+                    <a class="btn btn-outline-primary btn-sm w-100" href="@RouteConstants.Account.LoginPath">
                         <i class="fas fa-sign-in-alt me-1"></i> Login
                     </a>
-                    <a class="btn btn-outline-success btn-sm w-100" href="/Account/Register">
+                    <a class="btn btn-outline-success btn-sm w-100" href="@RouteConstants.Account.RegisterPath">
                         <i class="fas fa-user-plus me-1"></i> Register
                     </a>
                 </div>
@@ -42,13 +42,3 @@
         </section>
     </main>
 </div>
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JS.InvokeVoidAsync("setupLogoutForm");
-        }
-    }
-}

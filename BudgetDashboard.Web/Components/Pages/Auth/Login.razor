@@ -1,5 +1,6 @@
 @page "/Account/Login"
 @using Microsoft.AspNetCore.Components.Authorization
+@using BudgetDashboard.Web.Constants
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
@@ -7,7 +8,7 @@
 <AuthorizeView>
     <Authorized>
         @{
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo(RouteConstants.Pages.Home);
         }
     </Authorized>
     <NotAuthorized>
