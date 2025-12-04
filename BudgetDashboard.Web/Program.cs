@@ -1,53 +1,61 @@
-/// <summary>
-/// Application startup and entry configuration for the ASP.NET Core Blazor Server application.
-/// </summary>
 using BudgetDashboard.Web.Components;
 using BudgetDashboard.Data;
 using BudgetDashboard.Data.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Server;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Build the WebApplication with default configuration and logging.
-// Register framework and application services:
-// - Razor Components with interactive server component support.
-// - Razor Pages and Server-side Blazor.
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor().AddCircuitOptions(options => options.DetailedErrors = true);
+// ---------------------------------------------------------------------------
+// Services
+// ---------------------------------------------------------------------------
 
-// Register Entity Framework Core DbContext (BudgetContext) configured to use SQLite
-// with the connection string named "DefaultConnection".
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddRazorPages();
+
+// EF
 builder.Services.AddDbContext<BudgetContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    // TODO TIMWIT: Do something about this
     options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<BudgetContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+// Cookie paths (still valid)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
+
 var app = builder.Build();
 
-// Apply any pending EF Core migrations at startup by creating a scoped service provider,
-// resolving the BudgetContext, and calling Database.MigrateAsync().
-// Migration application is awaited to ensure the database schema is up-to-date before handling requests.
+// ---------------------------------------------------------------------------
+// DB Migration
+// ---------------------------------------------------------------------------
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<BudgetContext>();
     await db.Database.MigrateAsync();
 }
 
-// Configure the HTTP request pipeline:
-// - In non-development environments, use an exception handler with scoped error pages and HSTS.
-// - Enforce HTTPS redirection and serve static files.
-// - Enable antiforgery protection and routing.
+// ---------------------------------------------------------------------------
+// Middleware
+// ---------------------------------------------------------------------------
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -58,19 +66,59 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
-
-// Enable antiforgery when using forms/components that require it.
 app.UseAntiforgery();
 
-// Map static assets and Razor component endpoints and enable interactive server render mode for the root component (App).
-app.MapStaticAssets();
-app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+// ---------------------------------------------------------------------------
+// API: LOGIN (JS handles redirect)
+// ---------------------------------------------------------------------------
 
-// Notes:
-// - Service registrations and middleware order are important for correct security and behavior
-//   (e.g., static files before routing, antiforgery when using forms/components that require it).
-// - Connection strings and environment settings are read from the application's configuration.
+app.MapPost("/api/auth/login", async (
+    SignInManager<ApplicationUser> signInManager,
+    UserManager<ApplicationUser> userManager,
+    HttpContext http,
+    [FromForm] string email,
+    [FromForm] string password
+) =>
+{
+    var user = await userManager.FindByEmailAsync(email);
+    if (user is null)
+        return Results.Json(new { success = false, error = "InvalidCredentials" });
+
+    var result = await signInManager.PasswordSignInAsync(user, password, false, false);
+    if (!result.Succeeded)
+        return Results.Json(new { success = false, error = "InvalidCredentials" });
+
+    return Results.Json(new { success = true, redirect = "/" });
+})
+.DisableAntiforgery();
+
+// ---------------------------------------------------------------------------
+// API: LOGOUT (JS handles redirect)
+// ---------------------------------------------------------------------------
+
+app.MapPost("/api/auth/logout", async (
+    SignInManager<ApplicationUser> signInManager
+) =>
+{
+    await signInManager.SignOutAsync();
+    return Results.Json(new { success = true, redirect = "/Account/Login" });
+})
+.DisableAntiforgery();
+
+// ---------------------------------------------------------------------------
+// Blazor Root (ONLY ONE ENDPOINT)
+// ---------------------------------------------------------------------------
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+// DO NOT MAP ANYTHING ELSE
+// - NO MapBlazorHub()
+// - NO _Host
+// - NO fallback files
+// - NO controllers
+
 app.Run();

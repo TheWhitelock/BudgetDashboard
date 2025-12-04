@@ -35,7 +35,7 @@ else
     private bool IsCancelled { get; set; }
     private string FormValidationClass = "";
 
-    public void BeginEdit() => StartEditing();
+    public async Task BeginEdit() => await StartEditing();
     public void StopEdit() => StopEditing();
 
     private async Task StartEditing()

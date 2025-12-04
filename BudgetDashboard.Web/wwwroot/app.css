@@ -1,18 +1,4 @@
 @charset "UTF-8";
-@font-face {
-  font-family: "Proxima Nova";
-  src: url("/fonts/proxima-nova/ProximaNova-Regular.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Proxima Nova";
-  src: url("/fonts/proxima-nova/ProximaNova-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 /*!
  * Bootstrap  v5.3.8 (https://getbootstrap.com/)
  * Copyright 2011-2025 The Bootstrap Authors

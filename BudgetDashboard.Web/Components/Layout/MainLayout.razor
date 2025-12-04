@@ -1,5 +1,6 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JS
 
 <div class="d-flex min-vh-100">
     <!-- Sidebar -->
@@ -15,22 +16,18 @@
                 <div class="d-flex flex-column gap-2">
                     <small class="text-muted">Signed in as:</small>
                     <span class="fw-semibold">@context.User.Identity?.Name</span>
-                    <a class="btn btn-outline-secondary btn-sm mt-2"
-                       href="Identity/Account/Manage">Account</a>
-                    <form method="post" action="Identity/Account/Logout">
-                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="window.performLogout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
                 </div>
             </Authorized>
 
             <NotAuthorized>
                 <div class="d-flex flex-column gap-2">
-                    <a class="btn btn-outline-primary btn-sm w-100" href="Identity/Account/Login">
+                    <a class="btn btn-outline-primary btn-sm w-100" href="/Account/Login">
                         <i class="fas fa-sign-in-alt me-1"></i> Login
                     </a>
-                    <a class="btn btn-outline-success btn-sm w-100" href="Identity/Account/Register">
+                    <a class="btn btn-outline-success btn-sm w-100" href="/Account/Register">
                         <i class="fas fa-user-plus me-1"></i> Register
                     </a>
                 </div>
@@ -40,10 +37,18 @@
 
     <!-- Main content area -->
     <main class="flex-grow-1">
-        <section class="p-5">
-            <CascadingAuthenticationState>
-                @Body
-            </CascadingAuthenticationState>
+        <section class="p-5">    
+            @Body
         </section>
     </main>
 </div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("setupLogoutForm");
+        }
+    }
+}

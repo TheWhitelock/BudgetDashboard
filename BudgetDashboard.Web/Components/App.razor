@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,18 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["BudgetDashboard.Web.styles.css"]" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    @* <script src="https://kit.webawesome.com/271d2a8833254659.js" crossorigin="anonymous"></script> *@
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveServer" />
-    
+    <CascadingAuthenticationState>
+        @* <Routes @rendermode="InteractiveServer" /> *@
+        <Routes />
+    </CascadingAuthenticationState>
+
     <script src="_framework/blazor.web.js"></script>
+    <script src="js/login.js"></script>
 </body>
 
 </html>

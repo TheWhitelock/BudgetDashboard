@@ -1,11 +1,10 @@
-@page "/register"
+@* @page "/Account/Register"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Identity.UI.Services
 @using BudgetDashboard.Data.Entities
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
-@inject IEmailSender EmailSender
 @inject NavigationManager Navigation
 @inject ILogger<Register> Logger
 
@@ -123,4 +122,4 @@
             await InvokeAsync(StateHasChanged);
         }
     }
-}
+} *@
