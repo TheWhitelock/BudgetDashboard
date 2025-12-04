@@ -97,6 +97,50 @@ app.MapPost("/api/auth/login", async (
 .DisableAntiforgery();
 
 // ---------------------------------------------------------------------------
+// API: REGISTER (JS handles redirect)
+// ---------------------------------------------------------------------------
+
+app.MapPost("/api/auth/register", async (
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    [FromForm] string email,
+    [FromForm] string password,
+    [FromForm] string confirmPassword
+) =>
+{
+    // Validation
+    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        return Results.Json(new { success = false, error = "EmailAndPasswordRequired" });
+
+    if (password != confirmPassword)
+        return Results.Json(new { success = false, error = "PasswordsDoNotMatch" });
+
+    if (password.Length < 6)
+        return Results.Json(new { success = false, error = "PasswordTooShort" });
+
+    // Check if user already exists
+    var existingUser = await userManager.FindByEmailAsync(email);
+    if (existingUser is not null)
+        return Results.Json(new { success = false, error = "EmailAlreadyExists" });
+
+    // Create user
+    var user = new ApplicationUser { UserName = email, Email = email };
+    var result = await userManager.CreateAsync(user, password);
+
+    if (!result.Succeeded)
+    {
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        return Results.Json(new { success = false, error = errors });
+    }
+
+    // Auto sign in after registration
+    await signInManager.SignInAsync(user, isPersistent: false);
+
+    return Results.Json(new { success = true, redirect = "/" });
+})
+.DisableAntiforgery();
+
+// ---------------------------------------------------------------------------
 // API: LOGOUT (JS handles redirect)
 // ---------------------------------------------------------------------------
 

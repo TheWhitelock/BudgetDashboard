@@ -1,125 +1,37 @@
-@* @page "/Account/Register"
-@using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Identity.UI.Services
-@using BudgetDashboard.Data.Entities
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
+@page "/Account/Register"
+@using Microsoft.AspNetCore.Components.Authorization
+@using BudgetDashboard.Web.Constants
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
-@inject ILogger<Register> Logger
 
-<h1>Register</h1>
-
-@if (!string.IsNullOrEmpty(PageError))
-{
-    <div class="alert alert-danger">@PageError</div>
-}
-
-<div class="register-container">
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email"
-               @bind="Input.Email"
-               @bind:event="oninput"
-               class="form-control"
-               autocomplete="username" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password"
-               @bind="Input.Password"
-               @bind:event="oninput"
-               class="form-control"
-               autocomplete="new-password" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Confirm password</label>
-        <input type="password"
-               @bind="Input.ConfirmPassword"
-               @bind:event="oninput"
-               class="form-control"
-               autocomplete="new-password" />
-    </div>
-
-    <button class="btn btn-primary" @onclick="HandleRegister" disabled="@IsProcessing">
-        @(IsProcessing ? "Creating account..." : "Register")
-    </button>
-</div>
-
-@code {
-    private InputModel Input { get; set; } = new();
-    private bool IsProcessing { get; set; }
-    private string PageError { get; set; } = string.Empty;
-
-    public class InputModel
-    {
-        [Required, EmailAddress]
-        public string Email { get; set; } = string.Empty;
-
-        [Required, StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; } = string.Empty;
-
-        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; } = string.Empty;
-    }
-
-    private async Task HandleRegister()
-    {
-        PageError = string.Empty;
-        IsProcessing = true;
-
-        try
-        {
-            // Basic manual validation
-            if (string.IsNullOrWhiteSpace(Input.Email))
-            {
-                PageError = "Email is required.";
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(Input.Password))
-            {
-                PageError = "Password is required.";
-                return;
-            }
-            if (Input.Password != Input.ConfirmPassword)
-            {
-                PageError = "Passwords do not match.";
-                return;
-            }
-
-            var user = Activator.CreateInstance<ApplicationUser>();
-            if (user is null)
-            {
-                PageError = "Could not create user instance.";
-                return;
-            }
-
-            user.UserName = Input.Email;
-            user.Email = Input.Email;
-
-            var result = await UserManager.CreateAsync(user, Input.Password);
-
-            if (result.Succeeded)
-            {
-                Logger.LogInformation("User created a new account with password.");
-                await SignInManager.SignInAsync(user, isPersistent: false);
-                Navigation.NavigateTo("/");
-                return;
-            }
-
-            PageError = string.Join(" ", result.Errors.Select(e => e.Description));
+<AuthorizeView>
+    <Authorized>
+        @{
+            Navigation.NavigateTo(RouteConstants.Pages.Home);
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error while registering user.");
-            PageError = "An unexpected error occurred.";
-        }
-        finally
-        {
-            IsProcessing = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-} *@
+    </Authorized>
+    <NotAuthorized>
+        <h3>Create Account</h3>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input id="registerEmail" type="email" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <input id="registerPassword" type="password" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label>Confirm Password</label>
+            <input id="registerConfirmPassword" type="password" class="form-control" required />
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="window.performRegister(document.getElementById('registerEmail').value, document.getElementById('registerPassword').value, document.getElementById('registerConfirmPassword').value)">Register</button>
+
+        <hr />
+
+        <p class="text-muted">Already have an account? <a href="@RouteConstants.Account.LoginPath">Login here</a></p>
+    </NotAuthorized>
+</AuthorizeView>
